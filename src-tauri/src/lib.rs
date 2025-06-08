@@ -7,40 +7,23 @@ use tauri::command;
 use aether_renderer_core::render_from_config;
 
 #[derive(Serialize, Deserialize)]
-#[serde(default)]
 struct RenderValues {
     input: String,
     output: String,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     fps: Option<u32>,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     format: Option<String>,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     fade_in: Option<f32>,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     fade_out: Option<f32>,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     bitrate: Option<String>,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     crf: Option<u8>,
-    #[serde(default)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     preview: Option<bool>,
-}
-
-impl Default for RenderValues {
-    fn default() -> Self {
-        RenderValues {
-            input: String::new(),
-            output: String::new(),
-            fps: None,
-            format: None,
-            fade_in: None,
-            fade_out: None,
-            bitrate: None,
-            crf: None,
-            preview: None,
-        }
-    }
 }
 
 #[command]

@@ -6,7 +6,7 @@ async function runRender() {
   const values = {
     input: document.getElementById('input').value,
     output: document.getElementById('output').value,
-    //fps: parseFloat(document.getElementById('fps').value),
+    fps: parseFloat(document.getElementById('fps').value),
     //format: document.getElementById('format').value,
     //fade_in: parseFloat(document.getElementById('fade_in').value),
     //fade_out: parseFloat(document.getElementById('fade_out').value),
