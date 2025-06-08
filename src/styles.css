@@ -7,7 +7,7 @@
   line-height: 24px;
   font-weight: 400;
 
-  color: #0f0f0f;
+  color: #7f7f7f;
   background-color: #f6f6f6;
 
   font-synthesis: none;
@@ -19,7 +19,7 @@
 
 .container {
   margin: 0;
-  padding-top: 10vh;
+  padding-top: 5vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -91,10 +91,36 @@ button {
   margin-right: 5px;
 }
 
+.my-0 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.my-1 {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+.my-2 {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.mx-0 {
+  margin-left: 0;
+  margin-right: 0;
+}
+.mx-1 {
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+}
+.mx-2 {
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     color: #f6f6f6;
-    background-color: #2f2f2f;
+    background-color: #4f4f4f;
   }
 
   a:hover {
