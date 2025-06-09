@@ -1,34 +1,37 @@
 const { invoke } = window.__TAURI__.core;
 
 async function runRender() {
-  console.log("Running render...");
-  //const configPath = document.getElementById('configPath').value;
+  //console.log("Running render...");
+  const inputPath = document.getElementById('input').value;
+  const outputPath = document.getElementById('output').value;
+  if (!inputPath || !outputPath) {
+    console.error("Input and output paths must be specified.");
+    return;
+  }
+  const fps = document.getElementById('fps').value;
+  const format = document.getElementById('format').value;
+  const fadeIn = document.getElementById('fade_in').value;
+  const fadeOut = document.getElementById('fade_out').value;
+  const bitrate = document.getElementById('bitrate').value;
+  const crf = document.getElementById('crf').value;
   const values = {
-    input: document.getElementById('input').value,
-    output: document.getElementById('output').value,
-    fps: parseFloat(document.getElementById('fps').value),
-    //format: document.getElementById('format').value,
-    //fade_in: parseFloat(document.getElementById('fade_in').value),
-    //fade_out: parseFloat(document.getElementById('fade_out').value),
-    //bitrate: document.getElementById('bitrate').value,
-    //crf: parseInt(document.getElementById('crf').value),
-    //preview: document.getElementById('preview').checked,
+    input: inputPath,
+    output: outputPath,
+    fps: fps ? parseFloat(fps) : null,
+    format: format ? format : 'webm',
+    fade_in: fadeIn ? parseFloat(fadeIn) : null,
+    fade_out: fadeOut ? parseFloat(fadeOut) : null,
+    bitrate: bitrate ? bitrate : null,
+    crf: crf ? parseInt(crf) : null,
+    preview: document.getElementById('preview').checked ? true : null,
   };
-  console.log("Values to send:", values);
   try {
-    await invoke('run_renderer', { values });
-    console.log("Render completed successfully");
+    console.log("Values to send:", values);
+    const runRenderResult = await invoke('run_renderer', { values });
+    console.log("Render completed successfully", runRenderResult);
   } catch (error) {
     console.error("Render failed:", error);
   }
-}
-
-let greetInputEl;
-let greetMsgEl;
-
-async function greet() {
-  // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-  greetMsgEl.textContent = await invoke("greet", { name: greetInputEl.value });
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -36,14 +39,4 @@ window.addEventListener("DOMContentLoaded", () => {
     console.log("Config button clicked");
     runRender();
   });
-
-
-  /*
-  greetInputEl = document.querySelector("#greet-input");
-  greetMsgEl = document.querySelector("#greet-msg");
-  document.querySelector("#greet-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    greet();
-  });
-  */
 });
