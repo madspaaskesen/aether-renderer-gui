@@ -7,45 +7,90 @@
     <title>Tauri App</title>
     <script type="module" src="/main.js" defer></script>
   </head>
-
   <body>
     <main class="container">
       <h1>Aether Renderer GUI 🌌</h1>
-      <div class="row my-1">
-        <input type="text" id="input" placeholder="Input file" class="mx-1" />
-        <input type="text" id="output" placeholder="Output file" class="mx-1" />
-      </div>
-      <div class="row my-1">
-        <input type="number" step="0.1" id="fps" placeholder="fps default 30" class="mx-1" />
-        <input type="text" id="format" placeholder="format default webm" class="mx-1" />
-      </div>
-      <div class="row my-1">
-        <input type="number" step="0.1" id="fade_in" placeholder="fade_in 1.0 = 1 second" class="mx-1" />
-        <input type="number" step="0.1" id="fade_out" placeholder="fade_out 1.0 = 1 second" class="mx-1" />
-      </div>
-      <div class="row my-1">
-        <input type="text" id="bitrate" placeholder="bitrate" class="mx-1" />
-        <input type="number" id="crf" placeholder="crf" class="mx-1" />
-      </div>
-      <div class="row my-1">
-        <label for="preview">
-          <input type="checkbox" id="preview" placeholder="Width" />
-          Preview
-        </label>
-      </div>
-      <div class="row my-1">
-        <button id="configButton">Render</button>
-      </div>
-      <div id="status" class="status-bar"></div>
 
-      <p>
-        The Aether Renderer is a powerful tool for rendering high-quality images
-        and animations.
-      </p>
-      <p>
-        You can use this application to configure the rendering parameters and
-        start the rendering process.
-      </p>
+      <div class="row my-1">
+        <button id="selectFileBtn" class="btn">📁 Select File</button>
+        <button id="selectFolderBtn" class="btn">📂 Select Folder</button>
+      </div>
+
+      <div class="row my-1">
+        <input type="text" id="selectedPath" class="input-path" placeholder="Selected input path..." readonly />
+      </div>
+
+      <div class="row my-1">
+        <label for="outputPath">Output path:</label>
+        <input type="text" id="outputPath" class="input-path" placeholder="Leave empty to auto-select..." />
+      </div>
+
+      <div class="row my-1">
+        <label for="format">Format:</label>
+        <select id="format">
+          <option value="">Default .webm</option>
+          <option value="gif">.gif</option>
+          <option value="mp4">.mp4</option>
+          <option value="webm">.webm</option>
+        </select>
+      </div>
+
+      <details class="text-left">
+        <summary>⚙️ Advanced Settings</summary>
+
+        <div class="row my-1 text-left">
+          <label for="fps">FPS:</label>
+          <input type="number" id="fps" placeholder="30" />
+        </div>
+        <div class="row my-1">
+          <label for="fade_in">Fade in:</label>
+          <input type="number" step="0.1" id="fade_in" placeholder="0.0" />
+        </div>
+        <div class="row my-1">
+          <label for="fade_out">Fade out:</label>
+          <input type="number" step="0.1" id="fade_out" placeholder="0.0" />
+        </div>
+        <div class="row my-1">
+          <label for="bitrate">Bitrate:</label>
+          <input type="text" id="bitrate" placeholder="0.0" />
+        </div>
+        <div class="row my-1">
+          <label for="crf">Crf:</label>
+          <input type="number" id="crf" placeholder="0.0" />
+        </div>
+        <!--
+        <div class="row my-1">
+          <label for="resolution">Resolution:</label>
+          <input type="text" id="resolution" placeholder="1920x1080" />
+        </div>
+        <div class="row my-1">
+          <label for="quality">Quality (1-100):</label>
+          <input type="number" id="quality" placeholder="80" />
+        </div>
+        -->
+        <div class="row my-1">
+          <label for="preview">
+            <input type="checkbox" id="preview" placeholder="Width" />
+            Preview
+          </label>
+        </div>
+      </details>
+      
+      <div class="row my-1">
+        <button id="renderBtn" class="btn btn-render">✨ Render</button>
+      </div>
+
+      <div id="status" class="status-bar my-1"></div>
+
+      <div class="row my-1" id="resultArea" style="display: none;">
+        <p>✅ Rendered to: <span id="resultPath"></span></p>
+        <button id="revealBtn" class="btn">🔍 Show in Finder</button>
+        <button id="openBtn" class="btn">▶️ Open File</button>
+        <button id="resetBtn" class="btn">🔄 Reset</button>
+        <!--
+        <video id="previewVideo" controls autoplay loop style="max-width: 100%; margin-top: 1rem;"></video>
+        -->
+      </div>
     </main>
   </body>
 </html>
