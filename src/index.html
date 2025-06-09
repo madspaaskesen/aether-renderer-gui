@@ -10,30 +10,51 @@
 
   <body>
     <main class="container">
-      <h1>Welcome to Tauri</h1>
+      <h1>Aether Renderer GUI 🌌</h1>
 
-      <div class="row">
-        <a href="https://tauri.app" target="_blank">
-          <img src="/assets/tauri.svg" class="logo tauri" alt="Tauri logo" />
-        </a>
-        <a
-          href="https://developer.mozilla.org/en-US/docs/Web/JavaScript"
-          target="_blank"
-        >
-          <img
-            src="/assets/javascript.svg"
-            class="logo vanilla"
-            alt="JavaScript logo"
-          />
-        </a>
+      <div class="row my-1">
+        <input type="text" id="input" placeholder="Input file" class="mx-1" />
+        <input type="text" id="output" placeholder="Output file" class="mx-1" />
       </div>
+      <div class="row my-1">
+        <input type="number" step="0.1" id="fps" placeholder="fps default 30" class="mx-1" />
+        <input type="text" id="format" placeholder="format default webm" class="mx-1" />
+      </div>
+      <div class="row my-1">
+        <input type="number" step="0.1" id="fade_in" placeholder="fade_in 1.0 = 1 second" class="mx-1" />
+        <input type="number" step="0.1" id="fade_out" placeholder="fade_out 1.0 = 1 second" class="mx-1" />
+      </div>
+      <div class="row my-1">
+        <input type="text" id="bitrate" placeholder="bitrate" class="mx-1" />
+        <input type="number" id="crf" placeholder="crf" class="mx-1" />
+      </div>
+      <div class="row my-1">
+        <label for="preview">
+          <input type="checkbox" id="preview" placeholder="Width" />
+          Preview
+        </label>
+      </div>
+      <div class="row my-1">
+        <button id="configButton">Render</button>
+      </div>
+      <p>
+        The Aether Renderer is a powerful tool for rendering high-quality images
+        and animations.
+      </p>
+      <p>
+        You can use this application to configure the rendering parameters and
+        start the rendering process.
+      </p>
+      <!--
       <p>Click on the Tauri logo to learn more about the framework</p>
 
       <form class="row" id="greet-form">
         <input id="greet-input" placeholder="Enter a name..." />
         <button type="submit">Greet</button>
       </form>
+      
       <p id="greet-msg"></p>
+      -->
     </main>
   </body>
 </html>
