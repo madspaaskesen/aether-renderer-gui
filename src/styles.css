@@ -117,6 +117,27 @@ button {
   margin-right: 1em;
 }
 
+.status-bar {
+  margin-top: 1em;
+  text-align: center;
+  font-size: 0.95em;
+  color: #ffffffcc;
+  background-color: #333;
+  padding: 0.5em 1em;
+  border-radius: 8px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  transition: opacity 0.3s ease-in-out;
+}
+.status-bar.error {
+  background-color: #c0392b;
+}
+.status-bar.success {
+  background-color: #27ae60;
+}
+
+
 @media (prefers-color-scheme: dark) {
   :root {
     color: #f6f6f6;

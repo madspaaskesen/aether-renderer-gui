@@ -1,11 +1,17 @@
 const { invoke } = window.__TAURI__.core;
 
+function showStatus(message, type = "success") {
+  const statusBar = document.getElementById("status");
+  statusBar.textContent = message;
+  statusBar.className = `status-bar ${type}`;
+}
+
 async function runRender() {
   //console.log("Running render...");
   const inputPath = document.getElementById('input').value;
   const outputPath = document.getElementById('output').value;
   if (!inputPath || !outputPath) {
-    console.error("Input and output paths must be specified.");
+    showStatus("Input and output paths must be specified.", "error");
     return;
   }
   const fps = document.getElementById('fps').value;
@@ -17,26 +23,26 @@ async function runRender() {
   const values = {
     input: inputPath,
     output: outputPath,
-    fps: fps ? parseFloat(fps) : null,
-    format: format ? format : 'webm',
-    fade_in: fadeIn ? parseFloat(fadeIn) : null,
-    fade_out: fadeOut ? parseFloat(fadeOut) : null,
-    bitrate: bitrate ? bitrate : null,
-    crf: crf ? parseInt(crf) : null,
-    preview: document.getElementById('preview').checked ? true : null,
+    fps: valueOrUndefined(fps, parseFloat),
+    format: valueOrUndefined(format),
+    fade_in: valueOrUndefined(fadeIn, parseFloat),
+    fade_out: valueOrUndefined(fadeOut, parseFloat),
+    bitrate: valueOrUndefined(bitrate),
+    crf: valueOrUndefined(crf, parseInt),
+    preview: document.getElementById('preview').checked || undefined,
   };
   try {
-    console.log("Values to send:", values);
-    const runRenderResult = await invoke('run_renderer', { values });
-    console.log("Render completed successfully", runRenderResult);
+    //console.log("Values to send:", values);
+    const result = await invoke('run_renderer', { values });
+    showStatus(`✅ Render completed: ${outputPath}`, "success");
   } catch (error) {
-    console.error("Render failed:", error);
+    showStatus(`❌ Render failed: ${error}`, "error");
   }
 }
 
 window.addEventListener("DOMContentLoaded", () => {
   document.querySelector("#configButton").addEventListener("click", (e) => {
-    console.log("Config button clicked");
+    //console.log("Config button clicked");
     runRender();
   });
 });

@@ -11,7 +11,6 @@
   <body>
     <main class="container">
       <h1>Aether Renderer GUI 🌌</h1>
-
       <div class="row my-1">
         <input type="text" id="input" placeholder="Input file" class="mx-1" />
         <input type="text" id="output" placeholder="Output file" class="mx-1" />
@@ -37,6 +36,8 @@
       <div class="row my-1">
         <button id="configButton">Render</button>
       </div>
+      <div id="status" class="status-bar"></div>
+
       <p>
         The Aether Renderer is a powerful tool for rendering high-quality images
         and animations.
@@ -45,16 +46,6 @@
         You can use this application to configure the rendering parameters and
         start the rendering process.
       </p>
-      <!--
-      <p>Click on the Tauri logo to learn more about the framework</p>
-
-      <form class="row" id="greet-form">
-        <input id="greet-input" placeholder="Enter a name..." />
-        <button type="submit">Greet</button>
-      </form>
-      
-      <p id="greet-msg"></p>
-      -->
     </main>
   </body>
 </html>
