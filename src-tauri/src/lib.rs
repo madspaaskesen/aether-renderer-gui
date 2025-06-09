@@ -27,11 +27,6 @@ struct RenderValues {
 }
 
 #[command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
-#[command]
 fn run_renderer(values: RenderValues) -> Result<(), String> {
     let config_json = serde_json::to_string_pretty(&values)
         .map_err(|e| format!("Failed to serialize: {}", e))?;
@@ -51,7 +46,7 @@ fn run_renderer(values: RenderValues) -> Result<(), String> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, run_renderer]) // ✅ fixed
+        .invoke_handler(tauri::generate_handler![run_renderer]) 
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
