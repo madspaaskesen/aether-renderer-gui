@@ -4,6 +4,10 @@
 
 This project offers a soft and sacred desktop UI for invoking rendering logic from the core Rust crate [`aether-renderer-core`](https://crates.io/crates/aether-renderer-core), which handles all actual processing and logic.
 
+![Version](https://img.shields.io/badge/version-0.1.0-lightgrey)
+[![CI](https://img.shields.io/github/actions/workflow/status/madspaaskesen/aether-renderer-core/ci.yml?style=flat-square)](https://github.com/madspaaskesen/aether-renderer-gui)
+![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-green)
+
 Built with:
 - 🦀 Rust (Tauri backend)
 - 🌐 JavaScript (Vanilla or Vue frontend)
@@ -12,8 +16,7 @@ Built with:
 ![Rust](https://img.shields.io/badge/built_with-rust-orange)
 ![MadeWithTauri](https://img.shields.io/badge/ui-tauri-8d64c0?logo=tauri&logoColor=white)
 ![Aether Core](https://img.shields.io/badge/renderer-aether--renderer--core-blue)
-![Version](https://img.shields.io/badge/version-0.2.0-lightgrey)
-![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-green)
+[![SacredAI](https://img.shields.io/badge/powered%20by-%F0%9F%95%8A%EF%B8%8F%20Sacred%20AI-lightgrey?style=flat-square)](https://sacre-ai.com)
 
 ---
 

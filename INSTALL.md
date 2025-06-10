@@ -54,6 +54,38 @@ sudo apt install libwebkit2gtk-4.0-dev libjavascriptcoregtk-4.1-dev
 
 ---
 
+### 🎞️ Install `ffmpeg` (Required)
+
+This app relies on `ffmpeg` to encode video/audio correctly.
+Please install it before running the application.
+
+#### 🐧 Linux:
+
+```bash
+sudo apt install ffmpeg
+```
+
+#### 🍏 macOS (using Homebrew):
+
+```bash
+brew install ffmpeg
+```
+
+#### 🪟 Windows:
+
+1. Download the release from [ffmpeg.org](https://ffmpeg.org/download.html)
+2. Unzip and place it somewhere safe (e.g., `C:\ffmpeg`)
+3. Add `ffmpeg/bin` to your **System PATH**:
+
+   * Start Menu → *Environment Variables* → Edit "Path" → Add `C:\ffmpeg\bin`
+4. Test by running:
+
+```powershell
+ffmpeg -version
+```
+
+---
+
 ### 💡 Tip
 
 > This is an early preview release. If something doesn’t work, feel free to open an [issue](https://github.com/madspaaskesen/aether-renderer-gui/issues) or leave a star if you enjoy it! 🌟
