@@ -29,6 +29,8 @@ Built with:
 
 ![Screenshot preview](examples/aether-renderer-gui-preview-v0.1.0.jpg)
 
+Install guide here 👉 [INSTALL.md](INSTALL.md)
+
 ---
 
 ## 🧪 Getting Started
