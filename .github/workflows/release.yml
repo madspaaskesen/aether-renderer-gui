@@ -9,24 +9,21 @@ permissions:
 
 jobs:
   build:
-    name: Build binaries
+    name: Build installers only
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
           - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
-            ext: ""
             name: linux-x86_64
 
           - os: macos-latest
             target: x86_64-apple-darwin
-            ext: ""
             name: macos-x86_64
 
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            ext: ".exe"
             name: windows-x86_64
 
     steps:
@@ -42,7 +39,7 @@ jobs:
 
       - name: Add Rust target
         run: rustup target add ${{ matrix.target }}
-      
+
       - name: Install JSCoreGTK 4.0
         if: runner.os == 'Linux'
         run: sudo apt-get install -y libjavascriptcoregtk-4.1-dev
@@ -73,51 +70,22 @@ jobs:
       - name: Build Tauri app
         run: cargo tauri build --target ${{ matrix.target }}
 
-      - name: Prepare release artifact
-        shell: bash
-        run: |
-          mkdir -p dist/${{ matrix.name }}
-          cp target/${{ matrix.target }}/release/aether-renderer-gui${{ matrix.ext }} \
-            dist/${{ matrix.name }}/aether-renderer-gui${{ matrix.ext }}
-
-          if [[ "${{ runner.os }}" == "Windows" ]]; then
-            pwsh -Command "Compress-Archive -Path dist\\${{ matrix.name }} -DestinationPath dist\\aether-renderer-gui-${{ github.ref_name }}-${{ matrix.name }}.zip"
-          else
-            if [[ "${{ runner.os }}" == "macOS" ]]; then
-              cp -R target/${{ matrix.target }}/release/bundle/macos/aether-renderer-gui.app dist/${{ matrix.name }}/
-            fi
-            cd dist
-            zip -r aether-renderer-gui-${{ github.ref_name }}-${{ matrix.name }}.zip ${{ matrix.name }}
-          fi
-
-      - name: Upload release asset
-        uses: softprops/action-gh-release@v1
-        with:
-          files: dist/*.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Copy installer (if exists)
+      - name: Copy installer to dist/
         shell: bash
         run: |
           mkdir -p dist
-          # Check for .msi
-          if compgen -G "target/${{ matrix.target }}/release/bundle/msi/*.msi" > /dev/null; then
-            cp target/${{ matrix.target }}/release/bundle/msi/*.msi dist/
-          fi
-          # Check for .dmg
-          if compgen -G "target/${{ matrix.target }}/release/bundle/dmg/*.dmg" > /dev/null; then
+
+          if [[ "${{ runner.os }}" == "macOS" ]]; then
             cp target/${{ matrix.target }}/release/bundle/dmg/*.dmg dist/
-          fi
-          # Check for .AppImage or .deb
-          if compgen -G "target/${{ matrix.target }}/release/bundle/appimage/*.AppImage" > /dev/null; then
+          elif [[ "${{ runner.os }}" == "Windows" ]]; then
+            cp target/${{ matrix.target }}/release/bundle/msi/*.msi dist/
+          elif [[ "${{ runner.os }}" == "Linux" ]]; then
             cp target/${{ matrix.target }}/release/bundle/appimage/*.AppImage dist/
-          fi
-          if compgen -G "target/${{ matrix.target }}/release/bundle/deb/*.deb" > /dev/null; then
-            cp target/${{ matrix.target }}/release/bundle/deb/*.deb dist/
+            # or use .deb if preferred:
+            # cp target/${{ matrix.target }}/release/bundle/deb/*.deb dist/
           fi
 
-      - name: Upload release asset
+      - name: Upload installer
         uses: softprops/action-gh-release@v1
         with:
           files: dist/*
