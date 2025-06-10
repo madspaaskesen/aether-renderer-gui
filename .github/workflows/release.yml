@@ -54,7 +54,8 @@ jobs:
             build-essential \
             curl \
             pkg-config \
-            libssl-dev
+            libssl-dev \
+            webkit2gtk-4.1-dev
 
       - name: Build release binary
         run: cargo build --release --target ${{ matrix.target }}
