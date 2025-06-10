@@ -61,6 +61,18 @@ label {
   margin-bottom: 0.3rem;
 }
 
+.footer {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #aaa;
+  text-align: center;
+}
+.footer a {
+  color: #88ccff;
+  text-decoration: none;
+}
+
+
 
 @media (prefers-color-scheme: dark) {
   :root {
