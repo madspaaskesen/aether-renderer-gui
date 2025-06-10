@@ -39,6 +39,9 @@ jobs:
           toolchain: stable
           target: ${{ matrix.target }}
           override: true
+
+      - name: Add Rust target
+        run: rustup target add ${{ matrix.target }}
       
       - name: Install JSCoreGTK 4.0
         if: runner.os == 'Linux'
@@ -63,16 +66,6 @@ jobs:
         with:
           path: ~/.cargo/bin
           key: ${{ runner.os }}-cargo-tauri
-
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: ${{ matrix.target }}
-          override: true
-
-      - name: Add Rust target
-        run: rustup target add ${{ matrix.target }}
 
       - name: Install Tauri CLI
         run: cargo install tauri-cli
