@@ -100,19 +100,19 @@ jobs:
         run: |
           mkdir -p dist
           # Check for .msi
-          if compgen -G "src-tauri/target/${{ matrix.target }}/bundle/msi/*.msi" > /dev/null; then
-            cp src-tauri/target/${{ matrix.target }}/bundle/msi/*.msi dist/
+          if compgen -G "target/${{ matrix.target }}/bundle/msi/*.msi" > /dev/null; then
+            cp target/${{ matrix.target }}/bundle/msi/*.msi dist/
           fi
           # Check for .dmg
-          if compgen -G "src-tauri/target/${{ matrix.target }}/bundle/dmg/*.dmg" > /dev/null; then
-            cp src-tauri/target/${{ matrix.target }}/bundle/dmg/*.dmg dist/
+          if compgen -G "target/${{ matrix.target }}/bundle/dmg/*.dmg" > /dev/null; then
+            cp target/${{ matrix.target }}/bundle/dmg/*.dmg dist/
           fi
           # Check for .AppImage or .deb
-          if compgen -G "src-tauri/target/${{ matrix.target }}/bundle/appimage/*.AppImage" > /dev/null; then
-            cp src-tauri/target/${{ matrix.target }}/bundle/appimage/*.AppImage dist/
+          if compgen -G "target/${{ matrix.target }}/bundle/appimage/*.AppImage" > /dev/null; then
+            cp target/${{ matrix.target }}/bundle/appimage/*.AppImage dist/
           fi
-          if compgen -G "src-tauri/target/${{ matrix.target }}/bundle/deb/*.deb" > /dev/null; then
-            cp src-tauri/target/${{ matrix.target }}/bundle/deb/*.deb dist/
+          if compgen -G "target/${{ matrix.target }}/bundle/deb/*.deb" > /dev/null; then
+            cp target/${{ matrix.target }}/bundle/deb/*.deb dist/
           fi
 
       - name: Upload release asset
