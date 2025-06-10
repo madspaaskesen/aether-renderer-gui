@@ -41,9 +41,11 @@ jobs:
           override: true
       
       - name: Install JSCoreGTK 4.0
-        run: sudo apt-get install -y libjavascriptcoregtk-4.0-dev
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y libjavascriptcoregtk-4.1-dev
 
       - name: Install system dependencies for Tauri
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
