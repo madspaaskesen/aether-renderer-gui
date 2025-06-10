@@ -10,7 +10,7 @@ This project offers a soft and sacred desktop UI for invoking rendering logic fr
 
 Built with:
 - 🦀 Rust (Tauri backend)
-- 🌐 JavaScript (Vanilla or Vue frontend)
+- 🌐 JavaScript (Vanilla)
 - ✨ Sacred purpose & elegance
 
 ![Rust](https://img.shields.io/badge/built_with-rust-orange)
