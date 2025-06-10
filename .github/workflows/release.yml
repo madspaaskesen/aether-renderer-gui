@@ -60,7 +60,7 @@ jobs:
             webkit2gtk-4.1-dev
 
       - name: Build release binary
-        run: cargo build --release --target ${{ matrix.target }}
+        run: cargo tauri build --release --target ${{ matrix.target }}
 
       - name: Prepare release artifact
         shell: bash
@@ -71,7 +71,7 @@ jobs:
 
           # macOS special: move whole .app bundle if exists
           if [[ "${{ runner.os }}" == "macOS" ]]; then
-            cp -R src-tauri/target/release/bundle/macos/AetherRenderer.app dist/${{ matrix.name }}/
+            cp -R src-tauri/target/release/bundle/macos/aether-renderer-gui.app dist/${{ matrix.name }}/
           fi
 
           cd dist
@@ -81,5 +81,32 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: dist/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Copy installer (if exists)
+        shell: bash
+        run: |
+          mkdir -p dist
+          # Check for .msi
+          if compgen -G "src-tauri/target/${{ matrix.target }}/bundle/msi/*.msi" > /dev/null; then
+            cp src-tauri/target/${{ matrix.target }}/bundle/msi/*.msi dist/
+          fi
+          # Check for .dmg
+          if compgen -G "src-tauri/target/${{ matrix.target }}/bundle/dmg/*.dmg" > /dev/null; then
+            cp src-tauri/target/${{ matrix.target }}/bundle/dmg/*.dmg dist/
+          fi
+          # Check for .AppImage or .deb
+          if compgen -G "src-tauri/target/${{ matrix.target }}/bundle/appimage/*.AppImage" > /dev/null; then
+            cp src-tauri/target/${{ matrix.target }}/bundle/appimage/*.AppImage dist/
+          fi
+          if compgen -G "src-tauri/target/${{ matrix.target }}/bundle/deb/*.deb" > /dev/null; then
+            cp src-tauri/target/${{ matrix.target }}/bundle/deb/*.deb dist/
+          fi
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
