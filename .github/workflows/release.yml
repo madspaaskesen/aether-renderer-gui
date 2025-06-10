@@ -80,6 +80,10 @@ jobs:
           cp target/${{ matrix.target }}/release/aether-renderer-gui${{ matrix.ext }} \
             dist/${{ matrix.name }}/aether-renderer-gui${{ matrix.ext }}
 
+          # Windows special: move whole .exe bundle if exists
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            cp -R target/${{ matrix.target }}/release/aether-renderer-gui.exe dist/${{ matrix.name }}/
+          fi
           # macOS special: move whole .app bundle if exists
           if [[ "${{ runner.os }}" == "macOS" ]]; then
             cp -R target/${{ matrix.target }}/release/bundle/macos/aether-renderer-gui.app dist/${{ matrix.name }}/
