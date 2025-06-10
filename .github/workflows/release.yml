@@ -82,7 +82,7 @@ jobs:
 
           # macOS special: move whole .app bundle if exists
           if [[ "${{ runner.os }}" == "macOS" ]]; then
-            cp -R src-tauri/target/${{ matrix.target }}/release/bundle/macos/aether-renderer-gui.app dist/${{ matrix.name }}/
+            cp -R target/${{ matrix.target }}/release/bundle/macos/aether-renderer-gui.app dist/${{ matrix.name }}/
           fi
 
           cd dist
