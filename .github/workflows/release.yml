@@ -80,17 +80,15 @@ jobs:
           cp target/${{ matrix.target }}/release/aether-renderer-gui${{ matrix.ext }} \
             dist/${{ matrix.name }}/aether-renderer-gui${{ matrix.ext }}
 
-          # Windows special: move whole .exe bundle if exists
           if [[ "${{ runner.os }}" == "Windows" ]]; then
-            cp -R target/${{ matrix.target }}/release/aether-renderer-gui.exe dist/${{ matrix.name }}/
+            pwsh -Command "Compress-Archive -Path dist\\${{ matrix.name }} -DestinationPath dist\\aether-renderer-gui-${{ github.ref_name }}-${{ matrix.name }}.zip"
+          else
+            if [[ "${{ runner.os }}" == "macOS" ]]; then
+              cp -R target/${{ matrix.target }}/release/bundle/macos/aether-renderer-gui.app dist/${{ matrix.name }}/
+            fi
+            cd dist
+            zip -r aether-renderer-gui-${{ github.ref_name }}-${{ matrix.name }}.zip ${{ matrix.name }}
           fi
-          # macOS special: move whole .app bundle if exists
-          if [[ "${{ runner.os }}" == "macOS" ]]; then
-            cp -R target/${{ matrix.target }}/release/bundle/macos/aether-renderer-gui.app dist/${{ matrix.name }}/
-          fi
-
-          cd dist
-          zip -r aether-renderer-gui-${{ github.ref_name }}-${{ matrix.name }}.zip ${{ matrix.name }}
 
       - name: Upload release asset
         uses: softprops/action-gh-release@v1
