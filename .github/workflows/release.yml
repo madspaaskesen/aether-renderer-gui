@@ -62,17 +62,24 @@ jobs:
       - name: Build release binary
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Rename binary
+      - name: Prepare release artifact
         shell: bash
         run: |
-          mkdir -p dist
+          mkdir -p dist/${{ matrix.name }}
           cp target/${{ matrix.target }}/release/aether-renderer-gui${{ matrix.ext }} \
-            dist/aether-renderer-gui-${{ github.ref_name }}-${{ matrix.name }}${{ matrix.ext }}
+            dist/${{ matrix.name }}/aether-renderer-gui${{ matrix.ext }}
 
+          # macOS special: move whole .app bundle if exists
+          if [[ "${{ runner.os }}" == "macOS" ]]; then
+            cp -R src-tauri/target/release/bundle/macos/AetherRenderer.app dist/${{ matrix.name }}/
+          fi
+
+          cd dist
+          zip -r aether-renderer-gui-${{ github.ref_name }}-${{ matrix.name }}.zip ${{ matrix.name }}
 
       - name: Upload release asset
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/*
+          files: dist/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
