@@ -78,7 +78,7 @@ jobs:
         run: cargo install tauri-cli
 
       - name: Build Tauri app
-        run: cargo tauri build --release --target ${{ matrix.target }}
+        run: cargo tauri build --target ${{ matrix.target }}
 
       - name: Prepare release artifact
         shell: bash
