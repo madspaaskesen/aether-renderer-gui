@@ -25,6 +25,10 @@ Built with:
 - Cross-platform desktop experience
 - Designed to integrate with future sacred tooling
 
+### 👀 Preview (Screenshot)
+
+![Screenshot preview](examples/aether-renderer-gui-preview-v0.1.0.jpg)
+
 ---
 
 ## 🧪 Getting Started
