@@ -68,7 +68,7 @@ jobs:
           key: ${{ runner.os }}-cargo-tauri
 
       - name: Install Tauri CLI
-        run: cargo install tauri-cli
+        run: cargo install tauri-cli --force
 
       - name: Build Tauri app
         run: cargo tauri build --target ${{ matrix.target }}
