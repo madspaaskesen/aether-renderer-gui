@@ -72,6 +72,11 @@ label {
   text-decoration: none;
 }
 
+.color-gople {
+  color: #0b85ff;
+  text-shadow: rgba(11,133,255,0.87) 0px 0px 10px;
+}
+
 
 
 @media (prefers-color-scheme: dark) {
