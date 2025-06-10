@@ -105,3 +105,23 @@ Each output is part of a living system.
 
 Built to be quiet, focused, and emotionally clean,  
 this project invites creators to work in a space that respects the invisible just as much as the visible.
+
+---
+
+## 🌐 Related Projects
+
+- 🕊️ [Sacred-AI](https://sacred-ai.com)
+- 📈 [MySiteChart](https://mysitechart.com)
+- 🛠️ [MP-IT](https://mp-it.dk)
+- 🧵 [DDD Favoritter](https://ddd-favoritter.dk)
+
+---
+
+## 💛 Made with love by [Sacred-AI](https://sacred-ai.com)
+
+🙏 Made with clarity and care by [@mads](https://github.com/madspaaskesen) @ [@sacred-ai](https://github.com/Sacred-AI) 💛
+
+🌸 Powered by [Rust Lang](https://www.rust-lang.org/), [Rust getting started](https://www.rust-lang.org/learn/get-started)
+
+Aether Renderer Core is the sacred heart of a lightweight animation rendering toolkit.
+Converts frame sequences to video with love, transparency, and full creative control.
