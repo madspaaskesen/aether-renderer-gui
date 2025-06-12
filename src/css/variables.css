@@ -35,6 +35,9 @@
     --output-panel-fg: #111111;
     --output-panel-border: #e0e0e0;
     --output-panel-shadow: rgba(0, 0, 0, 0.1) 0px 2px 8px;
+
+    --panel-resizer-bg: #888888;
+    --panel-resizer-hover-bg: #bbbbbb;
 }
 
 .dark-mode {
@@ -71,6 +74,12 @@
     --settings-panel-fg: #f9f9f9;
     --settings-panel-border: #444444;
     --settings-panel-shadow: rgba(0, 0, 0, 0.2) 0px 2px 8px;
+
+    --panel-resizer-bg: #555555;
+    --panel-resizer-hover-bg: #777777;
+
+    --footer-bg: #1a1a1a;
+    --footer-fg: #888888;
 }
 
 

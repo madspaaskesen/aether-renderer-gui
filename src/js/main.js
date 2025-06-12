@@ -150,8 +150,7 @@ function updateDarkModeSetting(enabled) {
   localStorage.setItem("aetherDefaults", JSON.stringify(stored));
 }
 
-
-
+// Initialize the status spinner and event listeners
 window.addEventListener("DOMContentLoaded", () => {
   startStatusSpinner("Loading...");
   
@@ -166,10 +165,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById('openBtn').addEventListener('click', async () => {
     const path = document.getElementById('resultPath').textContent;
-    //console.log(" window.__TAURI__",  window.__TAURI__)
-    //window.__TAURI__.opener.openPath(path);
-    //await window.__TAURI__.shell.open(`file://${path}`);
-    //await window.__TAURI__.shell.open(path);
     await invoke('open_file', { path: path });
   });
 
@@ -194,6 +189,17 @@ window.addEventListener("DOMContentLoaded", () => {
     //window.__TAURI__.settings.set('dark_mode', isDarkMode);
     updateDarkModeSetting(isDarkMode); // 🧠 save right away
     updateAlertStatus(`Dark mode ${isDarkMode ? 'enabled' : 'disabled'}.`, "success");
+    document.querySelector(".drawer").classList.remove("open"); // Close drawer on toggle
+  });
+
+  document.getElementById("toggleAdvancedBtn").addEventListener("click", () => {
+    document.getElementById("basicSettings").style.display = "none";
+    document.getElementById("advancedSettings").style.display = "block";
+  });
+
+  document.getElementById("backToBasicBtn").addEventListener("click", () => {
+    document.getElementById("advancedSettings").style.display = "none";
+    document.getElementById("basicSettings").style.display = "block";
   });
 
   loadDefaultsFromLocalStorage();
