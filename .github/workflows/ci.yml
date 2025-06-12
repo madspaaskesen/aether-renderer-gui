@@ -26,7 +26,7 @@ jobs:
       - name: Install JSCoreGTK 4.0
         run: |
           sudo apt update && sudo apt --fix-missing install
-          sudo apt-get install -y libjavascriptcoregtk-4.1-dev
+          sudo apt-get install -y libjavascriptcoregtk-4.1-0 libjavascriptcoregtk-4.1-dev
 
       - name: Install system dependencies for Tauri
         run: |
