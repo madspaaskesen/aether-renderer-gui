@@ -1,110 +1,140 @@
+
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/layout.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri App</title>
-    <script type="module" src="/main.js" defer></script>
+    <title>Aether Renderer GUI</title>
+    <script type="module" src="js/status-bar-spinner.js" defer></script>
+    <script type="module" src="js/panel-resizer.js" defer></script>
+    <script type="module" src="js/main.js" defer></script>
   </head>
   <body>
-    <main class="container">
-      <h1 class="color-gople">Aether Renderer GUI v0.1.0 🪼</h1>
+    <main class="grid-container">
+      <section class="settings-panel" id="leftPanel">
+        <h1 class="color-gople">Aether Renderer GUI v0.1.1 🪼</h1>
 
-      <div class="row my-1">
-        <button id="selectFileBtn" class="btn">📁 Select File</button>
-        <button id="selectFolderBtn" class="btn">📂 Select Folder</button>
-      </div>
+        <div class="row my-1">
+          <button id="selectFileBtn" class="btn">📁 Select File</button>
+          <button id="selectFolderBtn" class="btn">📂 Select Folder</button>
+          <button id="toggleDrawerBtn" class="btn drawer-toggle">⚙️ Settings</button>
+        </div>
 
-      <div class="row my-1">
-        <input type="text" id="selectedPath" class="input-path" placeholder="Selected input path..." readonly />
-      </div>
+        <div class="row my-1">
+          <input type="text" id="selectedPath" class="input input-disabled input-path" placeholder="Selected input path..." readonly />
+        </div>
 
-      <div class="row my-1">
-        <label for="outputPath">Output path:</label>
-        <input type="text" id="outputPath" class="input-path" placeholder="Leave empty to auto-select..." />
-      </div>
+        <div class="row my-1">
+          <label for="outputPath" class="one">Output path:</label>
+          <input type="text" id="outputPath" class="input input-path" placeholder="Leave empty to auto-select..." />
+        </div>
 
-      <div class="row my-1">
-        <label for="format">Format:</label>
-        <select id="format">
-          <option value="">Default .webm</option>
-          <option value="gif">.gif</option>
-          <option value="mp4">.mp4</option>
-          <option value="webm">.webm</option>
-        </select>
-      </div>
+        <div class="row my-1">
+          <label for="format" class="one">Format:</label>
+          <select id="format">
+            <option value="">Default .webm</option>
+            <option value="gif">.gif</option>
+            <option value="mp4">.mp4</option>
+            <option value="webm">.webm</option>
+          </select>
+        </div>
 
-      <details class="text-left">
-        <summary>⚙️ Advanced Settings</summary>
-
-        <div class="row my-1 text-left">
-          <label for="fps">FPS:</label>
-          <input type="number" id="fps" placeholder="30 (default)" />
-          <span class="hint">Frames per second (e.g. 30, 60)</span>
-        </div>
-        <div class="row my-1">
-          <label for="fade_in">Fade in:</label>
-          <input type="number" step="0.1" id="fade_in" placeholder="0.0 (default)" />
-          <span class="hint">Fade in duration in seconds</span>
-        </div>
-        <div class="row my-1">
-          <label for="fade_out">Fade out:</label>
-          <input type="number" step="0.1" id="fade_out" placeholder="0.0 (default)" />
-          <span class="hint">Fade out duration in seconds</span>
-        </div>
-        <div class="row my-1">
-          <label for="bitrate">Bitrate:</label>
-          <input type="text" id="bitrate" placeholder=" (default empty)" />
-          <span class="hint">e.g. 5M for 5 Mbps or e.g. 2500k</span>
-        </div>
-        <div class="row my-1">
-          <label for="crf">Crf:</label>
-          <input type="number" id="crf" placeholder=" (default emtpy)" />
-          <span class="hint">e.g. 23 for x264 (lower = better)</span>
-        </div>
-        <!--
-        <div class="row my-1">
-          <label for="resolution">Resolution:</label>
-          <input type="text" id="resolution" placeholder="1920x1080" />
-        </div>
-        <div class="row my-1">
-          <label for="quality">Quality (1-100):</label>
-          <input type="number" id="quality" placeholder="80" />
-        </div>
-        -->
-        <div class="row my-1">
-          <label for="preview">
-            <input type="checkbox" id="preview" placeholder="Width" />
-            Preview
+        <details class="text-left">
+          <summary>⚙️ Advanced Settings</summary>
+          <div class="form-group my-1 text-left">
+            <label for="fps">FPS:</label>
+            <input type="number" id="fps" placeholder="30 (default)" />
+            <div class="field-hint">Frames per second (e.g. 30, 60)</div>
+          </div>
+          <div class="form-group my-1">
+            <label for="fade_in">Fade in:</label>
+            <input type="number" step="0.1" id="fade_in" placeholder="0.0 (default)" />
+            <div class="field-hint">Fade in duration in seconds</div>
+          </div>
+          <div class="form-group my-1">
+            <label for="fade_out">Fade out:</label>
+            <input type="number" step="0.1" id="fade_out" placeholder="0.0 (default)" />
+            <div class="field-hint">Fade out duration in seconds</div>
+          </div>
+          <div class="form-group my-1">
+            <label for="bitrate">Bitrate:</label>
+            <input type="text" id="bitrate" placeholder=" (default empty)" />
+            <div class="field-hint">e.g. 5M for 5 Mbps or e.g. 2500k</div>
+          </div>
+          <div class="form-group my-1">
+            <label for="crf">Crf:</label>
+            <input type="number" id="crf" placeholder=" (default empty)" />
+            <div class="field-hint">e.g. 23 for x264 (lower = better)</div>
+          </div>
+          <div class="form-group my-1 hide">
+            <label for="preview">
+              <input type="checkbox" id="preview" value="true" />
+              Preview
+            </label>
+          </div>
+          <label>
+            <input type="checkbox" id="saveDefaults" />
+            Save as default settings
           </label>
+        </details>
+
+        <p class="text-left text-xs mb-0">💡 Advanced settings are optional — defaults will be used if left empty.</p>
+
+        <div class="row my-1">
+          <button id="renderBtn" class="btn btn-render">✨ Render</button>
         </div>
-      </details>
-      <p class="text-left">
-        💡 Advanced settings are optional — defaults will be used if left empty.
-      </p>
-      
-      <div class="row my-1">
-        <button id="renderBtn" class="btn btn-render">✨ Render</button>
-      </div>
+      </section>
 
-      <div id="status" class="status-bar my-1"></div>
+      <div id="resizer" class="panel-resizer"></div>
 
-      <div class="row my-1" id="resultArea" style="display: none;">
-        <p>✅ Rendered to: <span id="resultPath"></span></p>
-        <button id="revealBtn" class="btn">🔍 Show in Finder</button>
-        <button id="openBtn" class="btn">▶️ Open File</button>
-        <button id="resetBtn" class="btn">🔄 Reset</button>
-        <!--
-        <video id="previewVideo" controls autoplay loop style="max-width: 100%; margin-top: 1rem;"></video>
-        -->
-      </div>
+      <section class="output-panel" id="rightPanel">
+        <div class="result-wrapper">
+          <div id="resultArea" style="display: none;">
+            
+            <button id="revealBtn" class="btn">🔍 Show in Finder</button>
+            <button id="openBtn" class="btn">▶️ Open File</button>
+            <button id="resetBtn" class="btn">🔄 Reset</button>
+            <div class="resizable-video-container">
+              <div id="videoResizer"></div>
+              <video id="previewVideo" controls autoplay loop ></video>
+            </div>
+            <p class="text-xs mb-0">✅ Rendered to: <span id="resultPath"></span></p>
+          </div>
+
+          <div id="ghostPreview" class="ghost-preview">
+            <div class="ghost-label">👻 No preview yet</div>
+          </div>
+        </div>
+
+        <div class="status-bar">
+          <div class="status-left">
+            <span class="spinner-text"></span>
+            <span class="status-bar-text-wrap">
+              <span class="status-bar-text" id="status-bar-text">Loading...</span>
+            </span>
+          </div>
+          <div class="status-right">
+            <span class="status-alert-wrap">
+              <span id="status-alert">.</span>
+            </span>
+          </div>
+        </div>
+      </section>
     </main>
+
+    <aside class="drawer">
+      <h2>Settings</h2>
+      <label for="darkModeToggle">
+        <input type="checkbox" id="darkModeToggle" />
+        🌙 Dark Mode
+      </label>
+    </aside>
+
     <footer class="footer">
-      <footer class="footer">
-        🕊️ Powered by <a href="https://sacred-ai.com" target="_blank">Sacred AI</a> • 
-        <a href="https://github.com/mp-it/aether-renderer-gui" target="_blank">MIT License</a>
-      </footer>
+      🕊️ Powered by <a href="https://sacred-ai.com" target="_blank">Sacred AI</a> • 
+      <a href="https://github.com/mp-it/aether-renderer-gui" target="_blank">MIT License</a>
     </footer>
   </body>
 </html>

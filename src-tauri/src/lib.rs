@@ -1,5 +1,4 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-use aether_renderer_core::render_from_config;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use std::fs::File;
@@ -27,10 +26,11 @@ struct RenderValues {
 }
 
 #[command]
-fn run_renderer(values: RenderValues) -> Result<String, String> {
+fn run_renderer_from_config(values: RenderValues) -> Result<String, String> {
     let config_json =
         serde_json::to_string_pretty(&values).map_err(|e| format!("Failed to serialize: {}", e))?;
 
+    /* */
     let config_path = "/tmp/aether-auto-config.json"; // or use tempfile crate
 
     let mut file =
@@ -39,9 +39,42 @@ fn run_renderer(values: RenderValues) -> Result<String, String> {
     file.write_all(config_json.as_bytes())
         .map_err(|e| format!("Failed to write config file: {}", e))?;
 
-    let _result = render_from_config(config_path);
-
+    let _result = aether_renderer_core::render_from_config(config_path);
+    
     Ok(format!("Rendered successfully to {}", values.output))
+}
+
+#[command]
+fn run_renderer(values: RenderValues) -> Result<String, String> {
+    let output_path = values.output.clone();
+
+    let _result = aether_renderer_core::render(aether_renderer_core::RenderConfig {
+        input: values.input.into(),
+        output: values.output,
+        file_pattern: None,
+        fps: values.fps.unwrap_or(30),
+        format: values.format.unwrap_or("webm".to_string()),
+        fade_in: values.fade_in.unwrap_or(0.0),
+        fade_out: values.fade_out.unwrap_or(0.0),
+        bitrate: values.bitrate,
+        crf: values.crf.map(|v| v as u32), // convert Option<u8> to Option<u32>
+        open: false,
+        verbose: false,
+        verbose_ffmpeg: false,
+    });
+
+    Ok(format!("Rendered successfully to {}", output_path))
+}
+
+
+#[command]
+fn get_rendered_file(path: String) -> Result<Vec<u8>, String> {
+    std::fs::read(path).map_err(|e| format!("Failed to read file: {}", e))
+}
+
+#[command]
+fn open_file(path: String) -> Result<(), String> {
+    open::that(path).map_err(|e| e.to_string())
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -50,7 +83,7 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![run_renderer])
+        .invoke_handler(tauri::generate_handler![run_renderer, run_renderer_from_config, get_rendered_file, open_file])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

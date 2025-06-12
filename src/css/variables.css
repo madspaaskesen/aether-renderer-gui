@@ -1,0 +1,98 @@
+
+/* Variables for light and dark mode themes */
+
+:root {
+    --bg: #d2d2d2;
+    --fg: #111111;
+
+    --border-color: #e0e0e0;
+
+    --input-bg: #f0f0f0;
+    --input-fg: #333333;
+    --input-border: #cccccc;
+    --input-border-focus: #4e4ef7;
+    --input-placeholder: #888888;
+    --input-disabled: #dddddd;
+    --input-disabled-fg: #666666;
+
+    --details-bg: #eaeaea;
+    --details-border: #e0e0e0;
+    --details-fg: #333333;
+    --details-hover-bg: #f0f0f0;
+    --details-hover-fg: #111111;
+
+    --logo-color: #4e4ef7;
+    --logo-hover-color: #ffe21c;
+    --logo-shadow: rgba(78, 78, 247, 0.87) 0px 0px 10px;
+    --logo-shadow-hover: rgba(255, 226, 28, 0.87) 0px 0px 10px;
+
+    --settings-panel-bg: #eaeaea;
+    --settings-panel-fg: #111111;
+    --settings-panel-border: #e0e0e0;
+    --settings-panel-shadow: rgba(0, 0, 0, 0.1) 0px 2px 8px;
+    
+    --output-panel-bg: #eaeaea;
+    --output-panel-fg: #111111;
+    --output-panel-border: #e0e0e0;
+    --output-panel-shadow: rgba(0, 0, 0, 0.1) 0px 2px 8px;
+}
+
+.dark-mode {
+    --bg: #1a1a1a;
+    --fg: #f9f9f9;
+
+    --border-color: #444444;
+
+    --input-bg: #4c4c4c;
+    --input-fg: #e0e0e0;
+    --input-border: #444444;
+    --input-border-focus: #4e4ef7;
+    --input-placeholder: #888888;
+    --input-disabled: #3c3c3c;
+    --input-disabled-fg: #888888;
+
+    --details-bg: #2c2c2c;
+    --details-border: #444444;
+    --details-fg: #e0e0e0;
+    --details-hover-bg: #3c3c3c;
+    --details-hover-fg: #f9f9f9;
+
+    --logo-color: #4e4ef7;
+    --logo-hover-color: #ffe21c;
+    --logo-shadow: rgba(78, 78, 247, 0.87) 0px 0px 10px;
+    --logo-shadow-hover: rgba(255, 226, 28, 0.87) 0px 0px 10px;
+
+    --output-panel-bg: #2c2c2c;
+    --output-panel-fg: #f9f9f9;
+    --output-panel-border: #444444;
+    --output-panel-shadow: rgba(0, 0, 0, 0.2) 0px 2px 8px;
+
+    --settings-panel-bg: #2c2c2c;
+    --settings-panel-fg: #f9f9f9;
+    --settings-panel-border: #444444;
+    --settings-panel-shadow: rgba(0, 0, 0, 0.2) 0px 2px 8px;
+}
+
+
+/*
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #f6f6f6;
+    background-color: #4f4f4f;
+  }
+
+  a:hover {
+    color: #24c8db;
+  }
+
+  input,
+  button {
+    color: #ffffff;
+    background-color: #0f0f0f98;
+  }
+  button:active {
+    background-color: #0f0f0f69;
+  }
+}
+*/
+

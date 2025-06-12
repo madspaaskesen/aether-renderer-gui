@@ -22,9 +22,10 @@ tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-aether-renderer-core = "0.2"
+aether-renderer-core = "0.3"
 tauri-plugin-dialog = "2"
 tauri-plugin-shell = "2"
+open = "5.3.2"
 # aether-renderer-core = { path = "../aether-renderer-core" }
 # aether-renderer-core = { git = "https://github.com/madspaaskesen/aether-renderer-core", rev = "staging" }
 

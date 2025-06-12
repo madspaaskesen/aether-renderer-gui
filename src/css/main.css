@@ -1,0 +1,228 @@
+
+@import url('variables.css');
+@import url('layout.css');
+
+body {
+    font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    font-synthesis: none;
+    line-height: 24px;
+    text-rendering: optimizeLegibility;
+    color: var(--fg);
+    
+    background-color: var(--bg);
+    background-image: url(../images/sacred-stars-preview.gif);
+    background-repeat: repeat;
+    transition: background 0.3s, color 0.3s;
+
+    padding: 2rem;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+}
+
+.logo.vanilla:hover {
+    filter: drop-shadow(0 0 2em #ffe21c);
+}
+
+.input {
+    background-color: var(--input-bg);
+    color: var(--input-fg);
+    border: 1px solid var(--input-border);
+    padding: 0.5rem;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.input:focus {
+    border-color: var(--input-border-focus);
+    outline: none;
+}
+.input::placeholder {
+    color: var(--input-placeholder);
+}
+.input:disabled, .input[readonly] {
+    border-color: var(--input-disabled);
+    background-color: var(--input-disabled);
+    color: var(--input-disabled-fg);
+    cursor: not-allowed;
+}
+label {
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+
+.dark-mode-toggle-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+}
+.dark-mode-toggle {
+    background: #4c4c6d;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.dark-mode-toggle:hover {
+    background: #595981;
+}
+
+
+/*
+.status-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--bg);
+    opacity: 0.8;
+    padding: 5px;
+    text-align: left;
+}*/
+
+
+.btn {
+  background: #4e4ef7;
+  border: none;
+  padding: 10px 16px;
+  color: white;
+  border-radius: 8px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+.btn-render {
+  background: #29b85d;
+}
+
+
+.input-path {
+  width: 100%;
+  padding: 10px;
+}
+
+details {
+    background-color: var(--details-bg);
+    border: 1px solid var(--details-border);
+    color: var(--details-fg);
+    padding: 1rem;
+    border-radius: 6px;
+}
+
+
+.footer {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #aaa;
+  text-align: center;
+}
+.footer a {
+  color: #88ccff;
+  text-decoration: none;
+}
+
+.color-gople {
+  color: #0b85ff;
+  text-shadow: rgba(11,133,255,0.87) 0px 0px 10px;
+}
+
+
+
+
+.text-sm {
+  font-size: 0.9rem;
+}
+.text-xs {
+  font-size: 0.8rem;
+}
+.text-lg {
+  font-size: 1.2rem;
+}
+.text-md {
+  font-size: 1rem;
+}
+.text-base {
+  font-size: 1rem;
+}
+.text-xl {
+  font-size: 1.5rem;
+}
+.text-2xl {
+  font-size: 1.8rem;
+}
+.text-3xl {
+  font-size: 2.2rem;
+}
+
+
+
+
+
+.spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.5em;
+  border: 2px solid #0f0;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  vertical-align: middle;
+}
+
+.spinner-text::before {
+  content: "⠁";
+  animation: spinText 1.5s steps(15, end) infinite;
+  display: inline-block;
+  margin-right: 0.5em;
+  font-family: monospace;
+  color: #0f0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spinText {
+  0% { content: "⠁"; }
+  9.09% { content: "⠃"; }
+  18.18% { content: "⠇"; }
+  27.27% { content: "⠧"; }
+  36.36% { content: "⠷"; }
+  45.45% { content: "⠿"; }
+  54.54% { content: "⠻"; }
+  63.63% { content: "⠹"; }
+  72.72% { content: "⠸"; }
+  81.81% { content: "⠰"; }
+  90.90% { content: "⠠"; }
+  100%  { content: "⠁"; }
+}
+
+/* Braille spinner animation 
+@keyframes spinText {
+  0% { content: "⠁"; }
+  6.667% { content: "⠃"; }
+  13.334% { content: "⠇"; }
+  20.001% { content: "⠧"; }
+  26.668% { content: "⠷"; }
+  33.335% { content: "⠿"; }
+  40.002% { content: "⠻"; }
+  46.669% { content: "⠟"; }
+  53.336% { content: "⠯"; }
+  60.003% { content: "⠷"; }
+  66.67%  { content: "⠾"; }
+  73.337% { content: "⠽"; }
+  80.004% { content: "⠻"; }
+  86.671% { content: "⠛"; }
+  93.338% { content: "⠋"; }
+  100%    { content: "⠁"; }
+}
+
+*/
