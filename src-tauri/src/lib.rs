@@ -40,7 +40,7 @@ fn run_renderer_from_config(values: RenderValues) -> Result<String, String> {
         .map_err(|e| format!("Failed to write config file: {}", e))?;
 
     let _result = aether_renderer_core::render_from_config(config_path);
-    
+
     Ok(format!("Rendered successfully to {}", values.output))
 }
 
@@ -66,7 +66,6 @@ fn run_renderer(values: RenderValues) -> Result<String, String> {
     Ok(format!("Rendered successfully to {}", output_path))
 }
 
-
 #[command]
 fn get_rendered_file(path: String) -> Result<Vec<u8>, String> {
     std::fs::read(path).map_err(|e| format!("Failed to read file: {}", e))
@@ -83,7 +82,12 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![run_renderer, run_renderer_from_config, get_rendered_file, open_file])
+        .invoke_handler(tauri::generate_handler![
+            run_renderer,
+            run_renderer_from_config,
+            get_rendered_file,
+            open_file
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
