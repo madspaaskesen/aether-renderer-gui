@@ -41,6 +41,7 @@ jobs:
         run: rustup target add ${{ matrix.target }}
 
       - name: Install JSCoreGTK 4.0
+        if: runner.os == 'Linux'
         run: |
           sudo apt update && sudo apt --fix-missing install
           sudo apt-get install -y libjavascriptcoregtk-4.1-0 libjavascriptcoregtk-4.1-dev
