@@ -41,7 +41,7 @@ Dark Mode:
 Morph Preview:  
 ![Aether GUI Light/Dark Fade](https://ojkwbrxgljlgelqndiai.supabase.co/storage/v1/object/public/sacred-ai/web/aether-renderer/aether-renderer-gui-preview-v0.1.1-light-dark-fade.gif)
 
-🪼 Designed with love by [Mads Paaskesen](https://github.com/madspaaskesen), [Mads Paaskesen](https://linkedin.com/in/madspaaskesen)
+🪼 Designed with love by GitHub [Mads Paaskesen](https://github.com/madspaaskesen), Linkedin [Mads Paaskesen](https://linkedin.com/in/madspaaskesen)
 
 Install guide here 👉 [INSTALL.md](INSTALL.md)
 
