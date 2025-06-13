@@ -1,12 +1,9 @@
-//import { open } from '@tauri-apps/plugin-dialog';
-//import { open } from '@tauri-apps/api/dialog';
 const { invoke } = window.__TAURI__.core;
 
 const valueOrUndefined = (val, parseFn = (v) => v) =>
   val === "" ? undefined : parseFn(val);
 
 async function selectFile() {
-  //console.log("Select file button clicked");
   const path = await window.__TAURI__.dialog.open({
     multiple: false,
     directory: false
@@ -18,7 +15,6 @@ async function selectFile() {
 }
 
 async function selectFolder() {
-  //console.log("Select folder button clicked");
   const path = await window.__TAURI__.dialog.open({
     multiple: false,
     directory: true
@@ -43,12 +39,10 @@ function beginRunRender() {
 function startRunRender() {
   window.setTimeout(async() => {
     await runRender();
-  }, 2000);  
+  }, 500);  
 }
 
 async function runRender() {
-  
-  //console.log("Running render...");
   const inputPath = document.getElementById('selectedPath').value;
   if (!inputPath) {
     updateAlertStatus("Input and output paths must be specified.", "error");
@@ -79,33 +73,16 @@ async function runRender() {
   }
   
   try {
-    //console.log("Values to send:", values);
-    
+    await new Promise(r => setTimeout(r, 100));
     const result = await invoke('run_renderer', { values });
     //showStatus(`✅ Render completed: ${outputPath}`, "success");
     document.getElementById('resultArea').style.display = 'block';
     document.getElementById('resultPath').textContent = outputPath;
-    /*
-    const URL = window.URL || window.webkitURL
-    const response = await fetch(`file://${outputPath}`);
-    const blob = await response.blob();
-    const fileURL = URL.createObjectURL(blob)
-    document.getElementById('previewVideo').src = fileURL; // `file://${outputPath}`;
-    */
-
-    // ✅ Let spinner show one more frame
-    await new Promise(r => setTimeout(r, 100));
-
-    // 🧠 Fetch the rendered file via Tauri backend
-    console.log("Fetching rendered file from backend...");
     const rawBytes = await invoke('get_rendered_file', { path: outputPath });
-    console.log("Raw bytes received:", rawBytes);
     const blob = new Blob([new Uint8Array(rawBytes)], { type: 'video/webm' });
-    console.log("Blob created:", blob);
-
     // 🎥 Preview it
     const fileURL = URL.createObjectURL(blob);
-    console.log("File URL created:", fileURL);
+    //console.log("File URL created:", fileURL);
     const preview = document.getElementById('previewVideo');
     preview.src = fileURL;
     preview.style.display = 'block';
@@ -128,7 +105,6 @@ function saveDefaultsToLocalStorage() {
   };
   localStorage.setItem("aetherDefaults", JSON.stringify(settings));
 }
-
 
 function loadDefaultsFromLocalStorage() {
   const stored = JSON.parse(localStorage.getItem("aetherDefaults") || "{}");

@@ -10,9 +10,12 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "aether-renderer-gui",
-        "width": 800,
-        "height": 620
+        "title": "🪼 Aether Renderer GUI",
+        "label": "main",
+        "width": 1200,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false
       }
     ],
     "security": {

@@ -15,12 +15,6 @@
     --input-disabled: #dddddd;
     --input-disabled-fg: #666666;
 
-    --details-bg: #eaeaea;
-    --details-border: #e0e0e0;
-    --details-fg: #333333;
-    --details-hover-bg: #f0f0f0;
-    --details-hover-fg: #111111;
-
     --logo-color: #4e4ef7;
     --logo-hover-color: #ffe21c;
     --logo-shadow: rgba(78, 78, 247, 0.87) 0px 0px 10px;
@@ -53,12 +47,6 @@
     --input-placeholder: #888888;
     --input-disabled: #3c3c3c;
     --input-disabled-fg: #888888;
-
-    --details-bg: #2c2c2c;
-    --details-border: #444444;
-    --details-fg: #e0e0e0;
-    --details-hover-bg: #3c3c3c;
-    --details-hover-fg: #f9f9f9;
 
     --logo-color: #4e4ef7;
     --logo-hover-color: #ffe21c;

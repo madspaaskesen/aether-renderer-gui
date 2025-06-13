@@ -1,32 +1,5 @@
 
 
-
-.btn {
-  background: #4e4ef7;
-  border: none;
-  padding: 10px 16px;
-  color: white;
-  border-radius: 8px;
-  margin-right: 10px;
-  cursor: pointer;
-}
-.btn-render {
-  background: #29b85d;
-  padding: 16px 18px;
-  color: white;
-  font-size: larger;
-  border-radius: 8px;
-  margin-top: 24px;
-  cursor: pointer;
-}
-
-
-.input-path {
-  width: 100%;
-  padding: 10px;
-}
-
-
 .input {
     background-color: var(--input-bg);
     color: var(--input-fg);
@@ -49,6 +22,29 @@
     color: var(--input-disabled-fg);
     cursor: not-allowed;
 }
+
+
+
+.btn {
+  background: #4e4ef7;
+  border: none;
+  padding: 10px 16px;
+  color: white;
+  border-radius: 8px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+.btn-render {
+  background: #29b85d;
+  padding: 16px 18px;
+  color: white;
+  font-size: larger;
+  border-radius: 8px;
+  margin-top: 24px;
+  cursor: pointer;
+}
+
+
 label {
   display: block;
   margin-bottom: 0.3rem;
@@ -56,7 +52,6 @@ label {
 
 
 
-input.input-path,
 select,
 input[type="number"],
 input[type="text"] {
