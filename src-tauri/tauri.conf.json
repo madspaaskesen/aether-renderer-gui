@@ -10,7 +10,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "🪼 Aether Renderer GUI",
+        "title": "🪼 Aether Renderer GUI v0.1.1",
         "label": "main",
         "width": 1200,
         "height": 800,

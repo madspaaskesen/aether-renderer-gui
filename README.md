@@ -30,7 +30,18 @@ Built with:
 
 ### 👀 Preview (Screenshot)
 
-![Screenshot preview](examples/aether-renderer-gui-preview-v0.1.0.jpg)
+## 🖼️ Aether Renderer GUI — Preview
+
+Light Mode:  
+![Aether GUI Light](https://ojkwbrxgljlgelqndiai.supabase.co/storage/v1/object/public/sacred-ai/web/aether-renderer/aether-renderer-gui-preview-v0.1.1-light.png)
+
+Dark Mode:  
+![Aether GUI Dark](https://ojkwbrxgljlgelqndiai.supabase.co/storage/v1/object/public/sacred-ai/web/aether-renderer/aether-renderer-gui-preview-v0.1.1-dark.png)
+
+Morph Preview:  
+![Aether GUI Light/Dark Fade](https://ojkwbrxgljlgelqndiai.supabase.co/storage/v1/object/public/sacred-ai/web/aether-renderer/aether-renderer-gui-preview-v0.1.1-light-dark-fade.gif)
+
+🪼 Designed with love by [Mads Paaskesen](https://github.com/madspaaskesen), [Mads Paaskesen](https://linkedin.com/in/madspaaskesen)
 
 Install guide here 👉 [INSTALL.md](INSTALL.md)
 
