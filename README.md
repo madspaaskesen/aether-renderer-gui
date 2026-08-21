@@ -134,5 +134,7 @@ this project invites creators to work in a space that respects the invisible jus
 
 🌸 Powered by [Rust Lang](https://www.rust-lang.org/), [Rust getting started](https://www.rust-lang.org/learn/get-started)
 
+[![mySiteChart](https://badges.mysitechart.com/github-project/madspaaskesen/aether-renderer-gui?site=COM)](https://mysitechart.com/In?github-project=madspaaskesen%2Faether-renderer-gui)
+
 Aether Renderer Core is the sacred heart of a lightweight animation rendering toolkit.
 Converts frame sequences to video with love, transparency, and full creative control.
