@@ -57,8 +57,8 @@ async fn run_renderer_from_config(values: RenderValues) -> Result<RenderResult, 
         serde_json::to_string_pretty(&values).map_err(|e| format!("Failed to serialize: {}", e))?;
 
     let config_path = std::env::temp_dir().join("aether-auto-config.json");
-    let mut file =
-        std::fs::File::create(&config_path).map_err(|e| format!("Failed to create config file: {}", e))?;
+    let mut file = std::fs::File::create(&config_path)
+        .map_err(|e| format!("Failed to create config file: {}", e))?;
     file.write_all(config_json.as_bytes())
         .map_err(|e| format!("Failed to write config file: {}", e))?;
 

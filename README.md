@@ -40,13 +40,13 @@ Built with:
 ## 🖼️ Aether Renderer GUI — Preview
 
 Light Mode:  
-![Aether GUI Light](https://ojkwbrxgljlgelqndiai.supabase.co/storage/v1/object/public/sacred-ai/web/aether-renderer/aether-renderer-gui-preview-v0.1.1-light.png)
+![Aether GUI Light](docs/screenshots/aether-renderer-gui-preview-v0.1.1-light.png)
 
 Dark Mode:  
-![Aether GUI Dark](https://ojkwbrxgljlgelqndiai.supabase.co/storage/v1/object/public/sacred-ai/web/aether-renderer/aether-renderer-gui-preview-v0.1.1-dark.png)
+![Aether GUI Dark](docs/screenshots/aether-renderer-gui-preview-v0.1.1-dark.png)
 
 Morph Preview:  
-![Aether GUI Light/Dark Fade](https://ojkwbrxgljlgelqndiai.supabase.co/storage/v1/object/public/sacred-ai/web/aether-renderer/aether-renderer-gui-preview-v0.1.1-light-dark-fade.gif)
+![Aether GUI Light/Dark Fade](docs/screenshots/aether-renderer-gui-preview-v0.1.1-light-dark-fade.gif)
 
 🪼 Designed with love by GitHub [Mads Paaskesen](https://github.com/madspaaskesen), Linkedin [Mads Paaskesen](https://linkedin.com/in/madspaaskesen)
 
