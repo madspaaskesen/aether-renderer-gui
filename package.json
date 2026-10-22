@@ -1,7 +1,7 @@
 {
   "name": "aether-renderer-gui",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Tauri desktop app for aether-renderer-core. The frontend in src/ is plain HTML/CSS/JS; npm is only used for the Tauri CLI.",
   "scripts": {
     "tauri": "tauri",
