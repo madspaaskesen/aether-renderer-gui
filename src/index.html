@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/layout.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aether Renderer GUI</title>
+  <link rel="icon" type="image/svg+xml" href="images/logo.svg" />
   <script type="module" src="js/status-bar-spinner.js" defer></script>
   <script type="module" src="js/panel-resizer.js" defer></script>
   <script type="module" src="js/main.js" defer></script>
@@ -40,8 +41,20 @@
             <option value="gif">.gif</option>
             <option value="mp4">.mp4</option>
             <option value="webm">.webm</option>
+            <option value="mov">.mov (ProRes 4444, for video editors)</option>
           </select>
         </div>
+
+        <div class="row my-2 bg-row">
+          <label for="bgColor" class="one text-sm">Background:</label>
+          <label class="bg-toggle text-sm" for="bgTransparent">
+            <input type="checkbox" id="bgTransparent" checked />
+            Transparent
+          </label>
+          <input type="color" id="bgColor" value="#000000" title="Background color" disabled />
+          <code id="bgColorValue" class="bg-color-value text-xs">transparent</code>
+        </div>
+        <div class="bg-hint text-xs" id="bgHint"></div>
         <div class="row my-2">
           <button id="toggleAdvancedBtn" class="btn my-2">⚙️ Advanced Settings</button>
         </div>
@@ -107,6 +120,7 @@
           <div class="resizable-video-container">
             <div id="videoResizer"></div>
             <video id="previewVideo" controls autoplay loop></video>
+            <img id="previewImage" alt="Rendered GIF preview" style="display: none;" />
           </div>
           <p class="text-xs mb-0">✅ Rendered to: <span id="resultPath"></span></p>
         </div>
@@ -122,6 +136,9 @@
           <span class="status-bar-text-wrap">
             <span class="status-bar-text" id="status-bar-text">Loading...</span>
           </span>
+          <span class="status-progress" id="statusProgress" hidden>
+            <span class="status-progress-fill" id="statusProgressFill"></span>
+          </span>
         </div>
         <div class="status-right">
           <span class="status-alert-wrap">
@@ -133,7 +150,7 @@
   </main>
 
   <div class="top-logo-overlay">
-    <h1 class="color-gople">Aether Renderer GUI v0.1.1 🪼</h1>
+    <h1 class="color-gople"><img src="images/logo.svg" alt="" class="app-logo" />Aether Renderer GUI v0.1.1 🪼</h1>
     <button id="toggleDrawerBtn" class="btn drawer-toggle dark-mode-btn">⚙️ Settings</button>
   </div>
 
@@ -146,8 +163,8 @@
   </aside>
 
   <footer class="footer">
-    🕊️ Powered by <a href="https://sacred-ai.com" target="_blank"><strong>Sacred AI</strong></a> •
-    <a href="https://github.com/mp-it/aether-renderer-gui" target="_blank">MIT License</a>
+    ⚒️ Made by <a href="https://hardcorewebsmith.com" target="_blank"><strong>Hardcore Websmith</strong></a> •
+    <a href="https://github.com/madspaaskesen/aether-renderer-gui" target="_blank">MIT License</a>
   </footer>
 </body>
 

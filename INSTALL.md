@@ -40,10 +40,10 @@ chmod +x aether-renderer-gui
 ./aether-renderer-gui
 ```
 
-If you get a "quarantine" or missing library error, install these dependencies:
+If you get a missing library error, install the WebKitGTK runtime:
 
 ```bash
-sudo apt install libwebkit2gtk-4.0-dev libjavascriptcoregtk-4.1-dev
+sudo apt install libwebkit2gtk-4.1-0 libgtk-3-0
 ```
 
 ---

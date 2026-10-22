@@ -1,4 +1,12 @@
 const { invoke } = window.__TAURI__.core;
+const { listen } = window.__TAURI__.event;
+
+const MIME_TYPES = {
+  webm: "video/webm",
+  mp4: "video/mp4",
+  mov: "video/quicktime",
+  gif: "image/gif",
+};
 
 const valueOrUndefined = (val, parseFn = (v) => v) =>
   val === "" ? undefined : parseFn(val);
@@ -31,25 +39,72 @@ function showStatus(message, type = "success") {
   statusBar.className = `status-bar ${type}`;
 }
 
-function beginRunRender() {
-  startStatusSpinner("Rendering with FFmpeg");
-  startRunRender();
+// ---------- Background color ----------
+
+/** The background to send to the renderer: a hex color, or undefined for transparent. */
+function selectedBackground() {
+  if (document.getElementById("bgTransparent").checked) return undefined;
+  return document.getElementById("bgColor").value;
 }
 
-function startRunRender() {
-  window.setTimeout(async() => {
-    await runRender();
-  }, 500);  
+/** Enable the color picker and explain what the choice means for the chosen format. */
+function updateBackgroundUi() {
+  const transparent = document.getElementById("bgTransparent").checked;
+  const color = document.getElementById("bgColor");
+  const format = currentFormat();
+  color.disabled = transparent;
+  document.getElementById("bgColorValue").textContent = transparent ? "transparent" : color.value;
+
+  const hint = document.getElementById("bgHint");
+  hint.classList.remove("warn");
+  if (transparent && format === "mp4") {
+    hint.textContent = "⚠️ MP4 can't be transparent: transparent areas become black. Pick the color of the page or video it will sit on.";
+    hint.classList.add("warn");
+  } else if (!transparent) {
+    hint.textContent = `Transparent areas are filled with ${color.value}; fades go to this color.`;
+  } else {
+    hint.textContent = "";
+  }
+}
+
+/** The chosen format, or the one implied by the output file name, else webm. */
+function currentFormat() {
+  const chosen = document.getElementById("format").value;
+  if (chosen) return chosen;
+  const ext = document.getElementById("outputPath").value.split(".").pop().toLowerCase();
+  return MIME_TYPES[ext] ? ext : "webm";
+}
+
+// ---------- Progress ----------
+
+function showProgress(percent, frame, total) {
+  const bar = document.getElementById("statusProgress");
+  bar.hidden = false;
+  document.getElementById("statusProgressFill").style.width = `${percent}%`;
+  updateMainStatus(`Rendering ${Math.round(percent)}% (${frame}/${total} frames)`);
+}
+
+function hideProgress() {
+  document.getElementById("statusProgress").hidden = true;
+  document.getElementById("statusProgressFill").style.width = "0%";
+}
+
+// ---------- Render ----------
+
+function beginRunRender() {
+  startStatusSpinner("Rendering with FFmpeg");
+  runRender();
 }
 
 async function runRender() {
   const inputPath = document.getElementById('selectedPath').value;
   if (!inputPath) {
     updateAlertStatus("Input and output paths must be specified.", "error");
+    stopStatusSpinner("Ready to render!");
     return;
   }
   if (!document.getElementById('outputPath').value)
-    document.getElementById('outputPath').value = "output.webm";
+    document.getElementById('outputPath').value = `output.${currentFormat()}`;
   const outputPath = document.getElementById('outputPath').value;
   const fps = document.getElementById('fps').value;
   const format = document.getElementById('format').value;
@@ -67,30 +122,59 @@ async function runRender() {
     bitrate: valueOrUndefined(bitrate),
     crf: valueOrUndefined(crf, parseInt),
     preview: document.getElementById('preview').checked || undefined,
+    background: selectedBackground(),
   };
   if (document.getElementById('saveDefaults').checked) {
     saveDefaultsToLocalStorage();
   }
-  
+
+  const renderBtn = document.getElementById('renderBtn');
+  renderBtn.disabled = true;
+  updateAlertStatus("", "success");
+  showProgress(0, 0, "?");
+
   try {
-    await new Promise(r => setTimeout(r, 100));
     const result = await invoke('run_renderer', { values });
-    //showStatus(`✅ Render completed: ${outputPath}`, "success");
     document.getElementById('resultArea').style.display = 'block';
-    document.getElementById('resultPath').textContent = outputPath;
-    const rawBytes = await invoke('get_rendered_file', { path: outputPath });
-    const blob = new Blob([new Uint8Array(rawBytes)], { type: 'video/webm' });
-    // 🎥 Preview it
-    const fileURL = URL.createObjectURL(blob);
-    //console.log("File URL created:", fileURL);
-    const preview = document.getElementById('previewVideo');
-    preview.src = fileURL;
-    preview.style.display = 'block';
-    preview.play();
+    document.getElementById('resultPath').textContent = result.output;
+    await showPreview(result.output);
+    if (result.notes && result.notes.includes("ℹ️")) {
+      updateAlertStatus(result.notes.split("\n").find((l) => l.includes("ℹ️")), "warn");
+    } else if (result.warnings.length) {
+      updateAlertStatus(result.warnings.join(" "), "warn");
+    }
+    stopStatusSpinner(`✅ Render done! ${result.frames ?? ""} frames`);
   } catch (error) {
     updateAlertStatus(`❌ Render failed: ${error}`, "error");
+    stopStatusSpinner("Render failed");
+  } finally {
+    hideProgress();
+    renderBtn.disabled = false;
   }
-  stopStatusSpinner("✅ Render Done!");
+}
+
+async function showPreview(outputPath) {
+  const ext = outputPath.split(".").pop().toLowerCase();
+  const rawBytes = await invoke('get_rendered_file', { path: outputPath });
+  const blob = new Blob([new Uint8Array(rawBytes)], { type: MIME_TYPES[ext] || "video/webm" });
+  const fileURL = URL.createObjectURL(blob);
+
+  const video = document.getElementById('previewVideo');
+  const image = document.getElementById('previewImage');
+  if (ext === "gif") {
+    video.pause();
+    video.style.display = 'none';
+    image.src = fileURL;
+    image.style.display = 'block';
+  } else {
+    image.style.display = 'none';
+    // e.g. ProRes .mov can't play in the webview; the file itself is fine.
+    video.onerror = () =>
+      updateAlertStatus("Preview not supported for this format here — use Open File.", "warn");
+    video.src = fileURL;
+    video.style.display = 'block';
+    video.play().catch(() => {});
+  }
 }
 
 function saveDefaultsToLocalStorage() {
@@ -101,6 +185,8 @@ function saveDefaultsToLocalStorage() {
     fade_out: document.getElementById("fade_out").value,
     bitrate: document.getElementById("bitrate").value,
     crf: document.getElementById("crf").value,
+    bgTransparent: document.getElementById("bgTransparent").checked,
+    bgColor: document.getElementById("bgColor").value,
     darkMode: document.body.classList.contains("dark-mode"),
   };
   localStorage.setItem("aetherDefaults", JSON.stringify(settings));
@@ -114,6 +200,8 @@ function loadDefaultsFromLocalStorage() {
   if (stored.fade_out) document.getElementById("fade_out").value = stored.fade_out;
   if (stored.bitrate) document.getElementById("bitrate").value = stored.bitrate;
   if (stored.crf) document.getElementById("crf").value = stored.crf;
+  if (stored.bgTransparent !== undefined) document.getElementById("bgTransparent").checked = stored.bgTransparent;
+  if (stored.bgColor) document.getElementById("bgColor").value = stored.bgColor;
   if (stored.darkMode !== undefined) {
     document.body.classList.toggle("dark-mode", stored.darkMode);
     document.getElementById("darkModeToggle").checked = stored.darkMode;
@@ -156,6 +244,8 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById('bitrate').value = '';
     document.getElementById('crf').value = '';
     document.getElementById('preview').checked = false;
+    document.getElementById('bgTransparent').checked = true;
+    updateBackgroundUi();
     updateAlertStatus("Form reset.", "success");
   });
 
@@ -178,7 +268,18 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("basicSettings").style.display = "block";
   });
 
+  document.getElementById('bgTransparent').addEventListener('change', updateBackgroundUi);
+  document.getElementById('bgColor').addEventListener('input', updateBackgroundUi);
+  document.getElementById('format').addEventListener('change', updateBackgroundUi);
+  document.getElementById('outputPath').addEventListener('input', updateBackgroundUi);
+
+  listen('render-progress', (event) => {
+    const p = event.payload;
+    showProgress(p.percent, p.frame, p.total_frames);
+  });
+
   loadDefaultsFromLocalStorage();
+  updateBackgroundUi();
 
   setTimeout(() => {
     stopStatusSpinner("Ready to render!");
