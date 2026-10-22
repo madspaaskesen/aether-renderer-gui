@@ -3,3 +3,8 @@ resolver = "2"
 members = [
   "src-tauri"
 ]
+
+# Develop against a local aether-renderer-core checkout next to this repo
+# (aether-renderer/aether-renderer-core): uncomment, and cargo uses it instead of crates.io.
+# [patch.crates-io]
+# aether-renderer-core = { path = "../aether-renderer-core" }

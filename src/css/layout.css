@@ -271,3 +271,89 @@
 
 
 
+
+/* Render progress in the status bar */
+.status-progress {
+  display: inline-block;
+  width: 110px;
+  height: 8px;
+  border: 1px solid #0f0;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.status-progress[hidden] {
+  display: none;
+}
+.status-progress-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: #0f0;
+  box-shadow: 0 0 6px #0f0;
+  transition: width 0.25s ease-out;
+}
+
+/* Background color picker */
+.bg-row {
+  align-items: center;
+}
+.settings-panel label.bg-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  white-space: nowrap;
+}
+#bgColor {
+  width: 42px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+}
+#bgColor:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.bg-color-value {
+  color: var(--input-placeholder);
+}
+.bg-hint {
+  margin: 0.4rem 0 0 141px;
+  min-height: 1em;
+  color: #888;
+}
+.bg-hint.warn {
+  color: #d98a00;
+}
+
+/* Checkerboard behind the preview, so transparency is visible */
+.resizable-video-container {
+  background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #ccc 25%, transparent 25%),
+    linear-gradient(-45deg, #ccc 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #ccc 75%),
+    linear-gradient(-45deg, transparent 75%, #ccc 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+#previewImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Lightning-E logo in the header */
+.app-logo {
+  height: 1.5em;
+  width: 1.5em;
+  vertical-align: middle;
+  margin-right: 0.35em;
+  position: relative;
+  top: -0.08em;
+}

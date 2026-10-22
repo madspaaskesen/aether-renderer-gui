@@ -1,9 +1,12 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
+use aether_renderer_core::config::PartialConfig;
 use serde::{Deserialize, Serialize};
-use serde_json;
-use std::fs::File;
 use std::io::Write;
-use tauri::command;
+use tauri::{command, AppHandle, Emitter};
+
+/// Event sent to the frontend while rendering, with a `RenderProgress`
+/// payload: `{ frame, total_frames, percent }`.
+const PROGRESS_EVENT: &str = "render-progress";
 
 #[derive(Serialize, Deserialize)]
 struct RenderValues {
@@ -23,47 +26,79 @@ struct RenderValues {
     crf: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
     preview: Option<bool>,
+    /// A color such as "#1e1e1e"; missing or "transparent" keeps transparency
+    #[serde(skip_serializing_if = "Option::is_none")]
+    background: Option<String>,
+}
+
+/// What the frontend gets back after a successful render.
+#[derive(Serialize)]
+struct RenderResult {
+    output: String,
+    frames: Option<usize>,
+    notes: Option<String>,
+    warnings: Vec<String>,
+}
+
+impl From<aether_renderer_core::RenderReport> for RenderResult {
+    fn from(report: aether_renderer_core::RenderReport) -> Self {
+        Self {
+            output: report.output_path.to_string_lossy().into_owned(),
+            frames: report.frames_rendered,
+            notes: report.notes,
+            warnings: report.ffmpeg_warnings,
+        }
+    }
 }
 
 #[command]
-fn run_renderer_from_config(values: RenderValues) -> Result<String, String> {
+async fn run_renderer_from_config(values: RenderValues) -> Result<RenderResult, String> {
     let config_json =
         serde_json::to_string_pretty(&values).map_err(|e| format!("Failed to serialize: {}", e))?;
 
-    /* */
-    let config_path = "/tmp/aether-auto-config.json"; // or use tempfile crate
-
-    let mut file =
-        File::create(config_path).map_err(|e| format!("Failed to create config file: {}", e))?;
-
+    let config_path = std::env::temp_dir().join("aether-auto-config.json");
+    let mut file = std::fs::File::create(&config_path)
+        .map_err(|e| format!("Failed to create config file: {}", e))?;
     file.write_all(config_json.as_bytes())
         .map_err(|e| format!("Failed to write config file: {}", e))?;
 
-    let _result = aether_renderer_core::render_from_config(config_path);
-
-    Ok(format!("Rendered successfully to {}", values.output))
+    let config_path = config_path.to_string_lossy().into_owned();
+    tauri::async_runtime::spawn_blocking(move || {
+        aether_renderer_core::render_from_config(&config_path)
+    })
+    .await
+    .map_err(|e| format!("Render task failed: {e}"))?
+    .map(RenderResult::from)
 }
 
+/// Render on a background thread (so the window stays responsive) and emit
+/// `render-progress` events while ffmpeg works.
 #[command]
-fn run_renderer(values: RenderValues) -> Result<String, String> {
-    let output_path = values.output.clone();
+async fn run_renderer(app: AppHandle, values: RenderValues) -> Result<RenderResult, String> {
+    // PartialConfig gives the same defaults and validation as the CLI, e.g. the
+    // format follows the output extension when none is chosen.
+    let cfg = PartialConfig {
+        input: Some(values.input.into()),
+        output: Some(values.output),
+        fps: values.fps,
+        format: values.format.filter(|f| !f.is_empty()),
+        fade_in: values.fade_in,
+        fade_out: values.fade_out,
+        bitrate: values.bitrate.filter(|b| !b.is_empty()),
+        crf: values.crf.map(u32::from),
+        background: values.background,
+        ..Default::default()
+    }
+    .into_config()?;
 
-    let _result = aether_renderer_core::render(aether_renderer_core::RenderConfig {
-        input: values.input.into(),
-        output: values.output,
-        file_pattern: None,
-        fps: values.fps.unwrap_or(30),
-        format: values.format.unwrap_or("webm".to_string()),
-        fade_in: values.fade_in.unwrap_or(0.0),
-        fade_out: values.fade_out.unwrap_or(0.0),
-        bitrate: values.bitrate,
-        crf: values.crf.map(|v| v as u32), // convert Option<u8> to Option<u32>
-        open: false,
-        verbose: false,
-        verbose_ffmpeg: false,
-    });
-
-    Ok(format!("Rendered successfully to {}", output_path))
+    tauri::async_runtime::spawn_blocking(move || {
+        aether_renderer_core::render_with_progress(cfg, |progress| {
+            let _ = app.emit(PROGRESS_EVENT, progress);
+        })
+    })
+    .await
+    .map_err(|e| format!("Render task failed: {e}"))?
+    .map(RenderResult::from)
 }
 
 #[command]
