@@ -8,7 +8,7 @@
 
 This project offers a soft and sacred desktop UI for invoking rendering logic from the core Rust crate [`aether-renderer-core`](https://crates.io/crates/aether-renderer-core), which handles all actual processing and logic.
 
-![Version](https://img.shields.io/badge/version-0.1.0-lightgrey)
+![Version](https://img.shields.io/badge/version-0.2.0-lightgrey)
 [![CI](https://img.shields.io/github/actions/workflow/status/madspaaskesen/aether-renderer-gui/ci.yml?style=flat-square)](https://github.com/madspaaskesen/aether-renderer-gui/actions)
 ![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-green)
 
