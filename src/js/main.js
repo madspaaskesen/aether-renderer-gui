@@ -11,6 +11,16 @@ const MIME_TYPES = {
 const valueOrUndefined = (val, parseFn = (v) => v) =>
   val === "" ? undefined : parseFn(val);
 
+const HTML_EXTENSIONS = ["html", "htm", "xhtml"];
+const CHROME_PATH_KEY = "aetherChromePath";
+
+/** An HTML file or web address (captured in Chrome), not a folder or ZIP of frames. */
+function isHtmlInput(path) {
+  const p = path.trim().toLowerCase();
+  return p.startsWith("http://") || p.startsWith("https://")
+    || HTML_EXTENSIONS.some((ext) => p.endsWith(`.${ext}`));
+}
+
 async function selectFile() {
   const path = await window.__TAURI__.dialog.open({
     multiple: false,
@@ -19,6 +29,19 @@ async function selectFile() {
   if (path) {
     document.getElementById('selectedPath').value = path;
     console.log("Selected file path:", path);
+    onInputChanged();
+  }
+}
+
+async function selectHtml() {
+  const path = await window.__TAURI__.dialog.open({
+    multiple: false,
+    directory: false,
+    filters: [{ name: "HTML", extensions: HTML_EXTENSIONS }],
+  });
+  if (path) {
+    document.getElementById('selectedPath').value = path;
+    onInputChanged();
   }
 }
 
@@ -30,7 +53,132 @@ async function selectFolder() {
   if (path) {
     document.getElementById('selectedPath').value = path;
     console.log("Selected folder path:", path);
+    onInputChanged();
   }
+}
+
+// ---------- HTML input ----------
+
+/** Width, height and duration from the "HTML capture" fields. */
+function captureValues() {
+  return {
+    width: parseInt(document.getElementById("captureWidth").value, 10),
+    height: parseInt(document.getElementById("captureHeight").value, 10),
+    duration: parseFloat(document.getElementById("captureDuration").value),
+  };
+}
+
+function currentFps() {
+  return parseFloat(document.getElementById("fps").value) || 30;
+}
+
+/** What's wrong with the capture fields, or null. */
+function captureProblem({ width, height, duration }) {
+  if (!(width > 0 && height > 0)) return "Size must be at least 1 × 1 px.";
+  if (!(duration > 0)) return "Duration must be more than 0 seconds.";
+  if (Math.round(duration * currentFps()) < 1) return "Duration is too short for one frame.";
+  return null;
+}
+
+function updateCaptureHint() {
+  const values = captureValues();
+  const hint = document.getElementById("captureHint");
+  const problem = captureProblem(values);
+  hint.classList.toggle("warn", !!problem);
+  hint.textContent = problem
+    ?? `${Math.round(values.duration * currentFps())} frames at ${currentFps()} fps, captured in headless Chrome.`;
+}
+
+/** Show the HTML settings and live preview for an HTML input, hide them otherwise. */
+function onInputChanged() {
+  const path = document.getElementById("selectedPath").value.trim();
+  const html = path !== "" && isHtmlInput(path);
+  document.getElementById("htmlCapture").hidden = !html;
+  if (html) {
+    updateCaptureHint();
+    showHtmlPreview(path);
+  } else {
+    hideHtmlPreview();
+  }
+}
+
+async function showHtmlPreview(path) {
+  const frame = document.getElementById("htmlFrame");
+  let src = path;
+  if (!/^https?:\/\//i.test(path)) {
+    try {
+      // Opens the asset protocol for this file's folder only (CSS, scripts, images).
+      await invoke("allow_preview", { path });
+    } catch (error) {
+      updateAlertStatus(String(error), "warn");
+      return;
+    }
+    src = window.__TAURI__.core.convertFileSrc(path);
+  }
+  document.getElementById("resultArea").style.display = "none";
+  document.getElementById("ghostPreview").style.display = "none";
+  document.getElementById("htmlPreview").hidden = false;
+  if (frame.dataset.src !== src) {
+    frame.dataset.src = src;
+    frame.src = src;
+  }
+  fitHtmlPreview();
+}
+
+function hideHtmlPreview() {
+  const frame = document.getElementById("htmlFrame");
+  document.getElementById("htmlPreview").hidden = true;
+  document.getElementById("ghostPreview").style.display = "";
+  frame.removeAttribute("src");
+  delete frame.dataset.src;
+}
+
+/** Size the iframe to the capture size and scale it down to fit the panel. */
+function fitHtmlPreview() {
+  const { width, height } = captureValues();
+  if (!(width > 0 && height > 0)) return;
+  const frame = document.getElementById("htmlFrame");
+  const stage = document.getElementById("htmlPreviewStage");
+  const scale = Math.min(1, stage.clientWidth / width, stage.clientHeight / height);
+  frame.style.width = `${width}px`;
+  frame.style.height = `${height}px`;
+  frame.style.transform = `translate(-50%, -50%) scale(${scale})`;
+  // The frame edge marks the captured area; keep it ~2px on screen at any scale.
+  frame.style.outline = `${2 / scale}px dashed rgba(78, 78, 247, 0.75)`;
+}
+
+// ---------- Chrome for HTML capture (Settings) ----------
+
+async function detectChrome() {
+  const explicit = document.getElementById("chromePath").value.trim();
+  const status = document.getElementById("chromeStatus");
+  const found = await invoke("detect_chrome", { explicit: explicit || null });
+  status.classList.toggle("ok", !!found);
+  status.classList.toggle("warn", !found);
+  if (found) {
+    status.textContent = `✅ Using ${found}`;
+  } else if (explicit) {
+    status.textContent = "⚠️ No chrome-headless-shell at that path.";
+  } else {
+    status.textContent = "⚠️ Not found. Install it with:";
+    const cmd = document.createElement("code");
+    cmd.textContent = "npx @puppeteer/browsers install chrome-headless-shell@stable --path ~/.cache/puppeteer";
+    status.append(cmd);
+  }
+  return found;
+}
+
+async function browseChrome() {
+  const path = await window.__TAURI__.dialog.open({ multiple: false, directory: false });
+  if (path) {
+    document.getElementById("chromePath").value = path;
+    saveChromePath();
+    detectChrome();
+  }
+}
+
+function saveChromePath() {
+  localStorage.setItem(CHROME_PATH_KEY, document.getElementById("chromePath").value.trim());
 }
 
 function showStatus(message, type = "success") {
@@ -92,14 +240,23 @@ function hideProgress() {
 // ---------- Render ----------
 
 function beginRunRender() {
-  startStatusSpinner("Rendering with FFmpeg");
+  const html = isHtmlInput(document.getElementById('selectedPath').value);
+  startStatusSpinner(html ? "Capturing in Chrome and encoding" : "Rendering with FFmpeg");
   runRender();
 }
 
 async function runRender() {
-  const inputPath = document.getElementById('selectedPath').value;
+  const inputPath = document.getElementById('selectedPath').value.trim();
   if (!inputPath) {
     updateAlertStatus("Input and output paths must be specified.", "error");
+    stopStatusSpinner("Ready to render!");
+    return;
+  }
+  const html = isHtmlInput(inputPath);
+  const capture = html ? captureValues() : undefined;
+  const problem = html ? captureProblem(capture) : null;
+  if (problem) {
+    updateAlertStatus(problem, "error");
     stopStatusSpinner("Ready to render!");
     return;
   }
@@ -123,6 +280,8 @@ async function runRender() {
     crf: valueOrUndefined(crf, parseInt),
     preview: document.getElementById('preview').checked || undefined,
     background: selectedBackground(),
+    capture,
+    chrome: html ? (document.getElementById('chromePath').value.trim() || undefined) : undefined,
   };
   if (document.getElementById('saveDefaults').checked) {
     saveDefaultsToLocalStorage();
@@ -135,6 +294,7 @@ async function runRender() {
 
   try {
     const result = await invoke('run_renderer', { values });
+    hideHtmlPreview();
     document.getElementById('resultArea').style.display = 'block';
     document.getElementById('resultPath').textContent = result.output;
     await showPreview(result.output);
@@ -187,6 +347,9 @@ function saveDefaultsToLocalStorage() {
     crf: document.getElementById("crf").value,
     bgTransparent: document.getElementById("bgTransparent").checked,
     bgColor: document.getElementById("bgColor").value,
+    captureWidth: document.getElementById("captureWidth").value,
+    captureHeight: document.getElementById("captureHeight").value,
+    captureDuration: document.getElementById("captureDuration").value,
     darkMode: document.body.classList.contains("dark-mode"),
   };
   localStorage.setItem("aetherDefaults", JSON.stringify(settings));
@@ -202,6 +365,10 @@ function loadDefaultsFromLocalStorage() {
   if (stored.crf) document.getElementById("crf").value = stored.crf;
   if (stored.bgTransparent !== undefined) document.getElementById("bgTransparent").checked = stored.bgTransparent;
   if (stored.bgColor) document.getElementById("bgColor").value = stored.bgColor;
+  if (stored.captureWidth) document.getElementById("captureWidth").value = stored.captureWidth;
+  if (stored.captureHeight) document.getElementById("captureHeight").value = stored.captureHeight;
+  if (stored.captureDuration) document.getElementById("captureDuration").value = stored.captureDuration;
+  document.getElementById("chromePath").value = localStorage.getItem(CHROME_PATH_KEY) || "";
   if (stored.darkMode !== undefined) {
     document.body.classList.toggle("dark-mode", stored.darkMode);
     document.getElementById("darkModeToggle").checked = stored.darkMode;
@@ -220,6 +387,21 @@ window.addEventListener("DOMContentLoaded", () => {
   
   document.getElementById('selectFileBtn').addEventListener('click', selectFile);
   document.getElementById('selectFolderBtn').addEventListener('click', selectFolder);
+  document.getElementById('selectHtmlBtn').addEventListener('click', selectHtml);
+  document.getElementById('selectedPath').addEventListener('change', onInputChanged);
+  for (const id of ['captureWidth', 'captureHeight', 'captureDuration', 'fps']) {
+    document.getElementById(id).addEventListener('input', () => {
+      updateCaptureHint();
+      fitHtmlPreview();
+    });
+  }
+  window.addEventListener('resize', fitHtmlPreview);
+  document.getElementById('browseChromeBtn').addEventListener('click', browseChrome);
+  document.getElementById('detectChromeBtn').addEventListener('click', detectChrome);
+  document.getElementById('chromePath').addEventListener('change', () => {
+    saveChromePath();
+    detectChrome();
+  });
   document.getElementById('renderBtn').addEventListener("click", beginRunRender);
 
   document.getElementById('revealBtn').addEventListener('click', () => {
@@ -245,6 +427,10 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById('crf').value = '';
     document.getElementById('preview').checked = false;
     document.getElementById('bgTransparent').checked = true;
+    document.getElementById('captureWidth').value = '1920';
+    document.getElementById('captureHeight').value = '1080';
+    document.getElementById('captureDuration').value = '4';
+    onInputChanged();
     updateBackgroundUi();
     updateAlertStatus("Form reset.", "success");
   });
@@ -280,6 +466,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   loadDefaultsFromLocalStorage();
   updateBackgroundUi();
+  detectChrome();
 
   setTimeout(() => {
     stopStatusSpinner("Ready to render!");

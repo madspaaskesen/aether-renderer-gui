@@ -357,3 +357,94 @@
   position: relative;
   top: -0.08em;
 }
+
+/* HTML input: capture settings */
+.input.input-num {
+  width: 6.5em;
+  flex: 0 0 auto;
+}
+.html-capture .row {
+  align-items: center;
+}
+/* One full-width element after the label, like the other rows, so it lines up. */
+.capture-fields {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* HTML input: live preview over a checkerboard, scaled to fit */
+.html-preview {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.html-preview[hidden] {
+  display: none;
+}
+.html-preview-stage {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #ccc 25%, transparent 25%),
+    linear-gradient(-45deg, #ccc 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #ccc 75%),
+    linear-gradient(-45deg, transparent 75%, #ccc 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+#htmlFrame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: none;
+  background: transparent;
+  transform-origin: center center;
+}
+
+/* Settings drawer: Chrome path */
+.drawer-section {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #444;
+  width: 340px;
+}
+.drawer-section h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+.drawer-section .input {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0.35rem 0;
+}
+.chrome-status {
+  margin-top: 0.4rem;
+  overflow-wrap: anywhere;
+  color: #bbb;
+}
+.chrome-status code {
+  display: block;
+  margin-top: 0.35rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  background: #111;
+  color: #e0e0e0;
+  user-select: all;
+}
+#captureHint {
+  margin-left: 110px;
+}
+.chrome-status.ok {
+  color: #7ddc7d;
+}
+.chrome-status.warn {
+  color: #ffb84d;
+}

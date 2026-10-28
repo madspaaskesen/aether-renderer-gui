@@ -22,11 +22,33 @@
           <button id="selectFileBtn" class="btn">📁 Select File</button>
           <span class="text-xs ml-2">or</span>
           <button id="selectFolderBtn" class="btn">📂 Select Folder</button>
+          <span class="text-xs ml-2">or</span>
+          <button id="selectHtmlBtn" class="btn" title="Capture an HTML/CSS/JS animation frame by frame">🌐 HTML</button>
         </div>
 
         <div class="row my-2">
-          <input type="text" id="selectedPath" class="input input-disabled"
-            placeholder="Selected input path..." readonly />
+          <input type="text" id="selectedPath" class="input"
+            placeholder="Frames folder, .zip, .html file or https:// address" />
+        </div>
+
+        <div id="htmlCapture" class="html-capture" hidden>
+          <div class="row my-2">
+            <label for="captureWidth" class="one text-sm">Size:</label>
+            <span class="capture-fields">
+              <input type="number" id="captureWidth" class="input input-num" min="1" step="1" value="1920" />
+              <span class="text-xs">×</span>
+              <input type="number" id="captureHeight" class="input input-num" min="1" step="1" value="1080" />
+              <span class="text-xs">px</span>
+            </span>
+          </div>
+          <div class="row my-2">
+            <label for="captureDuration" class="one text-sm">Duration:</label>
+            <span class="capture-fields">
+              <input type="number" id="captureDuration" class="input input-num" min="0.1" step="0.1" value="4" />
+              <span class="text-xs">seconds</span>
+            </span>
+          </div>
+          <div class="bg-hint text-xs" id="captureHint"></div>
         </div>
 
         <div class="row my-2">
@@ -128,6 +150,15 @@
         <div id="ghostPreview" class="ghost-preview">
           <div class="ghost-label">👻 No preview yet</div>
         </div>
+
+        <!-- After the ghost on purpose: `#resultArea + .ghost-preview` hides the ghost. -->
+        <div id="htmlPreview" class="html-preview" hidden>
+          <div class="html-preview-stage" id="htmlPreviewStage">
+            <iframe id="htmlFrame" title="HTML preview" sandbox="allow-scripts"></iframe>
+          </div>
+          <p class="text-xs mb-0">👀 Live preview. The render is captured frame by frame in headless Chrome,
+            so it is identical every time.</p>
+        </div>
       </div>
 
       <div class="status-bar">
@@ -150,7 +181,7 @@
   </main>
 
   <div class="top-logo-overlay">
-    <h1 class="color-gople"><img src="images/logo.svg" alt="" class="app-logo" />Aether Renderer GUI v0.2.0 🪼</h1>
+    <h1 class="color-gople"><img src="images/logo.svg" alt="" class="app-logo" />Aether Renderer GUI v0.3.0 🪼</h1>
     <button id="toggleDrawerBtn" class="btn drawer-toggle dark-mode-btn">⚙️ Settings</button>
   </div>
 
@@ -160,6 +191,16 @@
       <input type="checkbox" id="darkModeToggle" />
       🌙 Dark Mode
     </label>
+    <div class="drawer-section">
+      <h3>🌐 HTML capture</h3>
+      <label for="chromePath" class="text-sm">Chrome (chrome-headless-shell):</label>
+      <input type="text" id="chromePath" class="input" placeholder="Auto-detect" />
+      <div class="row my-1">
+        <button id="browseChromeBtn" class="btn">📁 Browse</button>
+        <button id="detectChromeBtn" class="btn">🔎 Detect</button>
+      </div>
+      <div id="chromeStatus" class="chrome-status text-xs"></div>
+    </div>
   </aside>
 
   <footer class="footer">

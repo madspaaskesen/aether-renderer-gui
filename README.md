@@ -8,7 +8,7 @@
 
 This project offers a soft and sacred desktop UI for invoking rendering logic from the core Rust crate [`aether-renderer-core`](https://crates.io/crates/aether-renderer-core), which handles all actual processing and logic.
 
-![Version](https://img.shields.io/badge/version-0.2.0-lightgrey)
+![Version](https://img.shields.io/badge/version-0.3.0-lightgrey)
 [![CI](https://img.shields.io/github/actions/workflow/status/madspaaskesen/aether-renderer-gui/ci.yml?style=flat-square)](https://github.com/madspaaskesen/aether-renderer-gui/actions)
 ![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-green)
 
@@ -28,6 +28,10 @@ Built with:
 ## ✨ Features
 
 - Pick a folder or ZIP of PNG frames and render to WebM, MOV (ProRes 4444), GIF or MP4
+- **🌐 HTML input**: pick an HTML/CSS/JS animation (or paste an https:// address), see it run
+  in a live preview, and render it to a transparent video. Frames are captured one by one in
+  headless Chrome with [`aether-renderer-capture`](https://github.com/madspaaskesen/aether-renderer-capture)
+  and streamed straight into the encoder, so every render is identical and no frames touch the disk
 - Background color picker: keep transparency, or fill it with a color (MP4 can't be transparent)
 - Live progress bar with frames and percent while FFmpeg works
 - Fade in / out, fps, bitrate and CRF in Advanced Settings
@@ -64,6 +68,9 @@ install the Tauri CLI, the same way as in [gifmeta-gui](https://github.com/madsp
 * [Rust](https://www.rust-lang.org/learn/get-started) (stable)
 * [Node.js](https://nodejs.org/) 18 or newer
 * `ffmpeg` on your PATH (macOS: `brew install ffmpeg`, more in [INSTALL.md](INSTALL.md))
+* For HTML input only: chrome-headless-shell. The app finds it in `~/.cache/puppeteer` or via
+  `AETHER_CHROME`, or you pick it in ⚙️ Settings:
+  `npx @puppeteer/browsers install chrome-headless-shell@stable --path ~/.cache/puppeteer`
 * macOS: Xcode Command Line Tools (`xcode-select --install`)
 * Linux: `sudo apt install libwebkit2gtk-4.1-dev libgtk-3-dev librsvg2-dev`
 
@@ -109,6 +116,7 @@ Created with care by [@madspaaskesen](https://github.com/madspaaskesen) ✨
 ## 🌱 Related Projects
 
 * [`aether-renderer-core`](https://github.com/madspaaskesen/aether-renderer-core) – logic library (crate)
+* [`aether-renderer-capture`](https://github.com/madspaaskesen/aether-renderer-capture) – HTML → deterministic, transparent frames (crate)
 
 ---
 
