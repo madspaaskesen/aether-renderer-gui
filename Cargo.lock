@@ -11,6 +11,8 @@ checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
 [[package]]
 name = "aether-renderer-capture"
 version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b05ce9de440f42bbcbada324598860d2aa618b46312f6e8f1c887746acfe35b6"
 dependencies = [
  "anyhow",
  "base64 0.23.1",

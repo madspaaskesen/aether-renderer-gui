@@ -24,3 +24,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Test renders (the default output lands next to the input, or in src-tauri in dev)
+*.webm
+*.mov
+*.mp4
+src-tauri/output.*
