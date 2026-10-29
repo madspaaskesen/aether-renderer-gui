@@ -4,22 +4,19 @@
 
 # 🌌 Aether Renderer GUI
 
-**Tauri-based desktop interface for the [Aether Renderer Core](https://github.com/madspaaskesen/aether-renderer-core)**
+**Turn PNG frames, ZIPs and HTML animations into transparent WebM, MOV, GIF and MP4. A desktop app for [Aether Renderer Core](https://github.com/madspaaskesen/aether-renderer-core).**
 
 This project offers a soft and sacred desktop UI for invoking rendering logic from the core Rust crate [`aether-renderer-core`](https://crates.io/crates/aether-renderer-core), which handles all actual processing and logic.
 
-![Version](https://img.shields.io/badge/version-0.3.0-lightgrey)
-[![CI](https://img.shields.io/github/actions/workflow/status/madspaaskesen/aether-renderer-gui/ci.yml?style=flat-square)](https://github.com/madspaaskesen/aether-renderer-gui/actions)
-![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-green)
+[![Release](https://img.shields.io/github/v/release/madspaaskesen/aether-renderer-gui)](https://github.com/madspaaskesen/aether-renderer-gui/releases)
+[![Downloads](https://img.shields.io/github/downloads/madspaaskesen/aether-renderer-gui/total)](https://github.com/madspaaskesen/aether-renderer-gui/releases)
+[![CI](https://github.com/madspaaskesen/aether-renderer-gui/actions/workflows/ci.yml/badge.svg)](https://github.com/madspaaskesen/aether-renderer-gui/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Built with:
-- 🦀 Rust (Tauri backend)
-- 🌐 JavaScript (Vanilla)
-- ✨ Sacred purpose & elegance
-
-![Rust](https://img.shields.io/badge/built_with-rust-orange)
-![MadeWithTauri](https://img.shields.io/badge/ui-tauri-8d64c0?logo=tauri&logoColor=white)
-![Aether Core](https://img.shields.io/badge/renderer-aether--renderer--core-blue)
+![Built with Rust](https://img.shields.io/badge/built_with-rust-orange)
+![Tauri](https://img.shields.io/badge/ui-tauri-8d64c0?logo=tauri&logoColor=white)
+[![aether-renderer-core](https://img.shields.io/crates/v/aether-renderer-core?label=aether-renderer-core)](https://crates.io/crates/aether-renderer-core)
+[![aether-renderer-capture](https://img.shields.io/crates/v/aether-renderer-capture?label=aether-renderer-capture)](https://crates.io/crates/aether-renderer-capture)
 [![Hardcore Websmith](https://img.shields.io/badge/made%20by-%E2%9A%92%EF%B8%8F%20Hardcore%20Websmith-lightgrey?style=flat-square)](https://hardcorewebsmith.com)
 [![mySiteChart](https://badges.mysitechart.com/github-project/madspaaskesen/aether-renderer-gui?site=COM)](https://mysitechart.com/In?github-project=madspaaskesen%2Faether-renderer-gui)
 
@@ -27,17 +24,20 @@ Built with:
 
 ## ✨ Features
 
-- Pick a folder or ZIP of PNG frames and render to WebM, MOV (ProRes 4444), GIF or MP4
-- **🌐 HTML input**: pick an HTML/CSS/JS animation (or paste an https:// address), see it run
-  in a live preview, and render it to a transparent video. Frames are captured one by one in
-  headless Chrome with [`aether-renderer-capture`](https://github.com/madspaaskesen/aether-renderer-capture)
-  and streamed straight into the encoder, so every render is identical and no frames touch the disk
-- Background color picker: keep transparency, or fill it with a color (MP4 can't be transparent)
-- Live progress bar with frames and percent while FFmpeg works
-- Fade in / out, fps, bitrate and CRF in Advanced Settings
-- Preview of the result, with a checkerboard so transparency is visible
-- Cross-platform desktop experience (macOS, Windows, Linux)
-- Designed to integrate with future sacred tooling
+- **Frames to video**: a folder or ZIP of PNG frames to WebM, MOV (ProRes 4444), GIF or MP4,
+  with transparency intact. Pick it, or just **drag and drop** it onto the window
+- **🌐 HTML to video**: an HTML/CSS/JS animation (or an https:// address) to a transparent video.
+  Frames are captured one by one in headless Chrome with
+  [`aether-renderer-capture`](https://github.com/madspaaskesen/aether-renderer-capture) and
+  streamed straight into the encoder: every render is identical, and no frames touch the disk
+- **Live preview and code editor** for HTML: edit in the Code tab, the preview follows as you
+  type, save with ⌘S, or start from a template with **New HTML**
+- **Size presets** for HTML: Full HD, 4K, 9:16 Reels/TikTok/Shorts, 4:5, square, stickers
+- **Background color**: keep transparency, or fill it with a color (MP4 can't be transparent)
+- Fade in / out, fps, bitrate and CRF in Advanced settings
+- Live progress, and a preview of the result on a checkerboard so transparency is visible
+- **Report a bug / Request a feature** from the app (diagnostics optional, you see what's sent)
+- Light and dark mode, macOS menu, works on macOS, Windows and Linux
 
 ### 👀 Preview (Screenshot)
 
@@ -108,7 +108,7 @@ aether-renderer-gui/
 
 ## 🕊️ License
 
-This project is dual-licensed under MIT and Apache-2.0.
+MIT, see [LICENSE](LICENSE).
 Created with care by [@madspaaskesen](https://github.com/madspaaskesen) ✨
 
 ---

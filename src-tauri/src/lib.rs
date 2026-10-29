@@ -5,6 +5,7 @@ use aether_renderer_core::{RenderConfig, RenderProgress, RenderReport};
 use serde::{Deserialize, Serialize};
 use std::io::Write;
 use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex};
 use tauri::{command, AppHandle, Emitter, Manager};
 
 /// Event sent to the frontend while rendering, with a `RenderProgress`
@@ -120,10 +121,11 @@ async fn run_renderer(app: AppHandle, values: RenderValues) -> Result<RenderResu
     // PartialConfig gives the same defaults and validation as the CLI, e.g. the
     // format follows the output extension when none is chosen. A capture is
     // read from a stream, which core calls "-".
+    let output = resolve_output(&values.output, &values.input, home_dir().as_deref());
     let input = if html { "-".into() } else { values.input };
     let cfg = PartialConfig {
         input: Some(input.into()),
-        output: Some(values.output),
+        output: Some(output),
         fps: values.fps,
         format: values.format.filter(|f| !f.is_empty()),
         fade_in: values.fade_in,
@@ -136,7 +138,7 @@ async fn run_renderer(app: AppHandle, values: RenderValues) -> Result<RenderResu
     .into_config()?;
 
     tauri::async_runtime::spawn_blocking(move || {
-        let progress = |p: RenderProgress| {
+        let progress = move |p: RenderProgress| {
             let _ = app.emit(PROGRESS_EVENT, p);
         };
         match capture {
@@ -154,12 +156,24 @@ async fn run_renderer(app: AppHandle, values: RenderValues) -> Result<RenderResu
 fn render_capture(
     cfg: RenderConfig,
     opts: CaptureOptions,
-    on_progress: impl FnMut(RenderProgress),
+    on_progress: impl FnMut(RenderProgress) + Send + 'static,
 ) -> Result<RenderReport, String> {
     let frames = u32::try_from(opts.frame_count())
         .map_err(|_| "❌ Too many frames for one render.".to_string())?;
+    // Progress comes from two places: the capture (frames reaching ffmpeg, the
+    // slow part) and ffmpeg (frames encoded, reported late and in bursts).
+    // Show whichever is further, so the bar moves steadily and never goes back.
+    let progress = Arc::new(Mutex::new(Furthest {
+        on_progress: Box::new(on_progress),
+        shown: 0,
+        total: frames,
+    }));
+    let captured = Arc::clone(&progress);
     let (stream, capture) = png_stream(opts).map_err(|e| format!("❌ {e:#}"))?;
-    let rendered = aether_renderer_core::render_stream(cfg, stream, Some(frames), on_progress);
+    let stream = stream.on_frame(move |n| lock(&captured).report(n as u32));
+    let rendered = aether_renderer_core::render_stream(cfg, stream, Some(frames), |p| {
+        lock(&progress).report(p.frame)
+    });
     // The stream is gone now, so the capture has finished or stopped.
     match (rendered, capture.wait()) {
         (Ok(report), Ok(_)) => Ok(report),
@@ -171,6 +185,59 @@ fn render_capture(
         (Err(e), _) => Err(e),
         (Ok(report), Err(_)) => Ok(report),
     }
+}
+
+/// Emits a progress event only when the frame count goes up.
+struct Furthest {
+    on_progress: Box<dyn FnMut(RenderProgress) + Send>,
+    shown: u32,
+    total: u32,
+}
+
+impl Furthest {
+    fn report(&mut self, frame: u32) {
+        let frame = frame.min(self.total);
+        if frame > self.shown {
+            self.shown = frame;
+            (self.on_progress)(RenderProgress::new(frame, self.total));
+        }
+    }
+}
+
+fn lock<T>(m: &Mutex<T>) -> std::sync::MutexGuard<'_, T> {
+    m.lock().unwrap_or_else(|e| e.into_inner())
+}
+
+/// Where to write the video. Relative names (like the default `output.webm`)
+/// go next to the input instead of the app's working directory, which is
+/// `src-tauri` in dev and often `/` in the built app. `~/` means home.
+fn resolve_output(output: &str, input: &str, home: Option<&Path>) -> String {
+    let output = output.trim();
+    if let (Some(rest), Some(home)) = (output.strip_prefix("~/"), home) {
+        return home.join(rest).to_string_lossy().into_owned();
+    }
+    if Path::new(output).is_absolute() {
+        return output.to_string();
+    }
+    let input = input.trim();
+    // A folder of frames gets its video next to it, not inside it.
+    let base = if input.contains("://") || input.is_empty() {
+        None
+    } else {
+        std::path::absolute(input)
+            .ok()
+            .and_then(|p| p.parent().map(Path::to_path_buf))
+    };
+    match base.or_else(|| home.map(Path::to_path_buf)) {
+        Some(dir) => dir.join(output).to_string_lossy().into_owned(),
+        None => output.to_string(),
+    }
+}
+
+fn home_dir() -> Option<PathBuf> {
+    std::env::var_os("HOME")
+        .or_else(|| std::env::var_os("USERPROFILE"))
+        .map(PathBuf::from)
 }
 
 /// An HTML file or a web address, as opposed to a folder or ZIP of frames.
@@ -262,6 +329,187 @@ fn allow_preview(app: AppHandle, path: String) -> Result<(), String> {
         .map_err(|e| format!("❌ Can't preview {path}: {e}"))
 }
 
+/// Facts for the About window, also handy to paste into a bug report.
+#[derive(Serialize)]
+struct AboutInfo {
+    version: &'static str,
+    core: &'static str,
+    capture: &'static str,
+    ffmpeg: Option<String>,
+    chrome: Option<String>,
+}
+
+#[command]
+async fn about_info(chrome: Option<String>) -> AboutInfo {
+    AboutInfo {
+        version: env!("CARGO_PKG_VERSION"),
+        core: env!("AETHER_CORE_VERSION"),
+        capture: env!("AETHER_CAPTURE_VERSION"),
+        ffmpeg: ffmpeg_version(),
+        chrome: find_chrome(chrome.as_deref()).map(|p| p.to_string_lossy().into_owned()),
+    }
+}
+
+/// "7.1" from `ffmpeg -version`, or None when ffmpeg isn't found.
+fn ffmpeg_version() -> Option<String> {
+    let out = std::process::Command::new("ffmpeg")
+        .arg("-version")
+        .output()
+        .ok()?;
+    let text = String::from_utf8_lossy(&out.stdout);
+    let line = text.lines().next()?;
+    let version = line
+        .strip_prefix("ffmpeg version ")
+        .and_then(|v| v.split_whitespace().next())
+        .unwrap_or(line);
+    Some(version.to_string())
+}
+
+/// Where bug reports and feature requests go (shared with Flixlar, which
+/// tells them apart by `project`).
+const FEEDBACK_URL: &str = "https://api.flixlar.com/feedback";
+
+/// A bug report or feature request from the Feedback window.
+#[derive(Deserialize)]
+struct Feedback {
+    /// "bug" or "feature"
+    kind: String,
+    email: Option<String>,
+    message: String,
+    diagnostics: Option<serde_json::Value>,
+    user_agent: Option<String>,
+    /// Hidden form field; only bots fill it in.
+    website: Option<String>,
+}
+
+#[command]
+async fn send_feedback(feedback: Feedback) -> Result<(), String> {
+    let message = feedback.message.trim().to_string();
+    if message.chars().count() < 5 {
+        return Err("Please write a little more.".into());
+    }
+    if message.chars().count() > 2000 {
+        return Err("Please keep it under 2000 characters.".into());
+    }
+    let body = serde_json::json!({
+        "project": "aether-renderer",
+        "type": feedback.kind,
+        "email": feedback.email.map(|e| e.trim().to_string()).filter(|e| !e.is_empty()),
+        "message": message,
+        "version": env!("CARGO_PKG_VERSION"),
+        "platform": format!("{}-{}", std::env::consts::OS, std::env::consts::ARCH),
+        "userAgent": feedback.user_agent,
+        "referrer": "aether-renderer-gui",
+        "diagnostics": feedback.diagnostics,
+        "website": feedback.website.unwrap_or_default(),
+    });
+    tauri::async_runtime::spawn_blocking(move || {
+        let agent = ureq::AgentBuilder::new()
+            .timeout(std::time::Duration::from_secs(20))
+            .build();
+        match agent.post(FEEDBACK_URL).send_json(body) {
+            Ok(_) => Ok(()),
+            Err(ureq::Error::Status(code, response)) => {
+                // The API answers {"error": "..."} for bad input.
+                let reason = response
+                    .into_json::<serde_json::Value>()
+                    .ok()
+                    .and_then(|v| v.get("error")?.as_str().map(String::from))
+                    .unwrap_or_else(|| format!("the server answered {code}"));
+                Err(format!("Couldn't send: {reason}."))
+            }
+            Err(e) => Err(format!(
+                "Couldn't reach the feedback server. Are you online? ({e})"
+            )),
+        }
+    })
+    .await
+    .map_err(|e| format!("Couldn't send: {e}"))?
+}
+
+/// Sent to the frontend to open the Feedback window, with "bug" or "feature".
+const OPEN_FEEDBACK_EVENT: &str = "open-feedback";
+
+/// Sent to the frontend to open the About window.
+const SHOW_ABOUT_EVENT: &str = "show-about";
+
+/// The macOS menu bar. "About Aether Renderer…" opens our own About window
+/// instead of the standard panel; Edit and Window keep copy/paste and the
+/// usual shortcuts working.
+#[cfg(target_os = "macos")]
+fn mac_menu(app: &AppHandle) -> tauri::Result<tauri::menu::Menu<tauri::Wry>> {
+    use tauri::menu::{Menu, MenuItem, PredefinedMenuItem as P, Submenu};
+    let about = MenuItem::with_id(app, "about", "About Aether Renderer…", true, None::<&str>)?;
+    let app_menu = Submenu::with_items(
+        app,
+        "Aether Renderer",
+        true,
+        &[
+            &about,
+            &P::separator(app)?,
+            &P::services(app, None)?,
+            &P::separator(app)?,
+            &P::hide(app, None)?,
+            &P::hide_others(app, None)?,
+            &P::show_all(app, None)?,
+            &P::separator(app)?,
+            &P::quit(app, None)?,
+        ],
+    )?;
+    let edit = Submenu::with_items(
+        app,
+        "Edit",
+        true,
+        &[
+            &P::undo(app, None)?,
+            &P::redo(app, None)?,
+            &P::separator(app)?,
+            &P::cut(app, None)?,
+            &P::copy(app, None)?,
+            &P::paste(app, None)?,
+            &P::select_all(app, None)?,
+        ],
+    )?;
+    let report_bug = MenuItem::with_id(app, "report-bug", "Report a Bug…", true, None::<&str>)?;
+    let request_feature =
+        MenuItem::with_id(app, "request-feature", "Request a Feature…", true, None::<&str>)?;
+    let help = Submenu::with_items(app, "Help", true, &[&report_bug, &request_feature])?;
+    let window = Submenu::with_items(
+        app,
+        "Window",
+        true,
+        &[
+            &P::minimize(app, None)?,
+            &P::maximize(app, None)?,
+            &P::separator(app)?,
+            &P::close_window(app, None)?,
+        ],
+    )?;
+    Menu::with_items(app, &[&app_menu, &edit, &window, &help])
+}
+
+/// Only local HTML files can be read or written by the code editor.
+fn editable_html(path: &str) -> Result<&Path, String> {
+    if path.contains("://") || !is_html_input(path) {
+        return Err("❌ Only local .html files can be edited here.".into());
+    }
+    Ok(Path::new(path))
+}
+
+/// The HTML file shown in the code editor.
+#[command]
+async fn read_html_file(path: String) -> Result<String, String> {
+    std::fs::read_to_string(editable_html(&path)?)
+        .map_err(|e| format!("❌ Couldn't read {path}: {e}"))
+}
+
+/// Save the code editor's HTML (Save button, ⌘S, or a new file from the template).
+#[command]
+async fn write_html_file(path: String, contents: String) -> Result<(), String> {
+    std::fs::write(editable_html(&path)?, contents)
+        .map_err(|e| format!("❌ Couldn't save {path}: {e}"))
+}
+
 #[command]
 fn get_rendered_file(path: String) -> Result<Vec<u8>, String> {
     std::fs::read(path).map_err(|e| format!("Failed to read file: {}", e))
@@ -278,7 +526,31 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
+        .setup(|app| {
+            #[cfg(target_os = "macos")]
+            app.handle().set_menu(mac_menu(app.handle())?)?;
+            let _ = app; // only used on macOS
+            Ok(())
+        })
+        .on_menu_event(|app, event| {
+            match event.id().0.as_str() {
+                "about" => {
+                    let _ = app.emit(SHOW_ABOUT_EVENT, ());
+                }
+                "report-bug" => {
+                    let _ = app.emit(OPEN_FEEDBACK_EVENT, "bug");
+                }
+                "request-feature" => {
+                    let _ = app.emit(OPEN_FEEDBACK_EVENT, "feature");
+                }
+                _ => {}
+            }
+        })
         .invoke_handler(tauri::generate_handler![
+            about_info,
+            send_feedback,
+            read_html_file,
+            write_html_file,
             run_renderer,
             run_renderer_from_config,
             detect_chrome,
@@ -293,6 +565,27 @@ pub fn run() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn only_local_html_is_editable() {
+        assert!(editable_html("/a/page.html").is_ok());
+        assert!(editable_html("C:\\x\\page.HTM").is_ok());
+        for no in ["/a/frames.zip", "/a/notes.txt", "https://example.com/x.html", "/etc/passwd"] {
+            assert!(editable_html(no).is_err(), "{no}");
+        }
+    }
+
+    #[test]
+    #[cfg(unix)] // Windows paths need a drive letter to be absolute
+    fn relative_output_goes_next_to_the_input() {
+        let home = Path::new("/home/me");
+        let next_to = |out: &str, input: &str| resolve_output(out, input, Some(home));
+        assert_eq!(next_to("output.webm", "/a/b/loading.html"), "/a/b/output.webm");
+        assert_eq!(next_to("out.gif", "/a/frames"), "/a/out.gif");
+        assert_eq!(next_to("/x/y.mp4", "/a/b.html"), "/x/y.mp4");
+        assert_eq!(next_to("~/v.webm", "/a/b.html"), "/home/me/v.webm");
+        assert_eq!(next_to("v.webm", "https://example.com"), "/home/me/v.webm");
+    }
 
     #[test]
     fn html_inputs_are_recognized() {
@@ -396,10 +689,11 @@ mod tests {
             .size(160, 120)
             .fps(20)
             .duration_secs(0.5);
-        let mut last = None;
-        let report = render_capture(cfg, opts, |p| last = Some(p)).unwrap();
+        let last = Arc::new(Mutex::new(None));
+        let seen = Arc::clone(&last);
+        let report = render_capture(cfg, opts, move |p| *lock(&seen) = Some(p)).unwrap();
         assert_eq!(report.frames_rendered, Some(10));
-        assert_eq!(last.unwrap().percent, 100.0);
+        assert_eq!(lock(&last).as_ref().unwrap().percent, 100.0);
         assert!(out.metadata().unwrap().len() > 0);
     }
 

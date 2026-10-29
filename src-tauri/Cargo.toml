@@ -18,6 +18,9 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
+# Sends bug reports and feature requests to api.flixlar.com (from Rust, not the
+# webview, so the API's CORS rules don't apply).
+ureq = { version = "2", features = ["json"] }
 tauri = { version = "2", features = ["protocol-asset"] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
