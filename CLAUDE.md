@@ -21,8 +21,9 @@ Needs `ffmpeg` on PATH at runtime. Linux build deps: `libwebkit2gtk-4.1-dev libg
 
 ## Core dependency
 
-`src-tauri/Cargo.toml` uses the published crate (`aether-renderer-core = "0.6"`); CI only checks
-out this repo, so never commit a `path` dependency. For local work on both repos, uncomment
+`src-tauri/Cargo.toml` uses the published crates (`aether-renderer-core = "0.7"`,
+`aether-renderer-capture = "0.2"`); CI only checks out this repo, so never commit a `path`
+dependency. For local work on both repos, uncomment
 `[patch.crates-io]` in the root `Cargo.toml` (expects `../aether-renderer-core`), and comment it
 out again before committing.
 
@@ -30,7 +31,7 @@ out again before committing.
 
 | Path | Role |
 |---|---|
-| `src-tauri/src/lib.rs` | Tauri commands: `run_renderer` (async, renders on `spawn_blocking`, emits `render-progress` events with `{frame,total_frames,percent}`, returns `{output,frames,notes,warnings}` or an error string), `run_renderer_from_config`, `get_rendered_file`, `open_file` |
+| `src-tauri/src/lib.rs` | Tauri commands: `run_renderer` (async, renders on `spawn_blocking`, emits `render-progress` events with `{frame,total_frames,percent}`, returns `{output,frames,notes,warnings}` or an error string; an HTML file/URL goes through `render_capture`: capture's `png_stream` → core's `render_stream`, no temp files), `detect_chrome`, `allow_preview` (opens the asset protocol for one HTML file's folder), `run_renderer_from_config`, `get_rendered_file`, `open_file` |
 | `src/index.html` | Single page: Basic Settings (input, output, format, background), Advanced Settings, preview, status bar, footer |
 | `src/js/main.js` | Form → `invoke('run_renderer', { values })`, `listen('render-progress')`, background picker logic, preview (video or `<img>` for GIF), localStorage defaults |
 | `src/js/status-bar-spinner.js` | `startStatusSpinner`, `stopStatusSpinner`, `updateMainStatus`, `updateAlertStatus` on `window` |
@@ -43,6 +44,10 @@ out again before committing.
   a core `PartialConfig`, so defaults and validation match the CLI. When the core gains an
   option, add it to `RenderValues`, the `PartialConfig` mapping, the form, `runRender()`,
   save/load defaults and the Reset handler.
+- HTML input: `isHtmlInput()` (JS) and `is_html_input()` (Rust) must agree. The preview iframe
+  keeps `sandbox="allow-scripts"` (no same-origin), so a page can't reach the Tauri IPC, and the
+  asset protocol scope starts empty (`tauri.conf.json`); `allow_preview` opens one folder at a time.
+  Chrome is found by `find_chrome`: Settings path, then `AETHER_CHROME`, then `~/.cache/puppeteer`.
 - Background: `background: undefined` = transparent; otherwise a `#rrggbb` string from the color
   input. MP4 shows a warning when transparent is selected (it renders black).
 - Long work must stay off the main thread (async command + `spawn_blocking`), and errors must

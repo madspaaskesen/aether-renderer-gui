@@ -32,6 +32,9 @@
 
     --panel-resizer-bg: #888888;
     --panel-resizer-hover-bg: #bbbbbb;
+
+    --scrollbar-thumb: #a0a0a0;
+    --scrollbar-thumb-hover: #7a7a7a;
 }
 
 .dark-mode {
@@ -65,6 +68,9 @@
 
     --panel-resizer-bg: #555555;
     --panel-resizer-hover-bg: #777777;
+
+    --scrollbar-thumb: #8c8c8c;
+    --scrollbar-thumb-hover: #b8b8b8;
 
     --footer-bg: #1a1a1a;
     --footer-fg: #888888;

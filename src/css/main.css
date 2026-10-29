@@ -4,6 +4,10 @@
 @import url('form.css');
 @import url('text.css');
 
+body.dark-mode {
+    background-image: url(../images/sacred-stars-preview.gif);
+}
+
 body {
     font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
     font-size: 16px;
@@ -14,23 +18,33 @@ body {
     color: var(--fg);
     
     background-color: var(--bg);
-    background-image: url(../images/sacred-stars-preview.gif);
+    /* Dark, colored stars on the light theme; the original glowing ones on dark. */
+    background-image: url(../images/sacred-stars-light.gif);
     background-repeat: repeat;
     transition: background 0.3s, color 0.3s;
 
-    padding: 2rem;
+    /* The window never scrolls: header, panels, footer and status bar fill
+       it, and each panel scrolls on its own (see layout.css). */
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
 }
 
 .top-logo-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 9999;
-    margin-left: 90px;
+    flex: none;
+    padding: 0 9rem 0 90px;
+}
+.top-logo-overlay h1 {
+    margin: 1rem 0 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
@@ -39,7 +53,8 @@ body {
     position: fixed;
     top: 1rem;
     right: 0.9rem;
-    z-index: 1000;
+    /* Above the drawer (1000), so the same button closes it again. */
+    z-index: 1001;
     background: #4c4c6d;
     color: white;
     border: none;
@@ -70,7 +85,9 @@ body {
 
 
 .footer {
-  margin-top: 2rem;
+  flex: none;
+  margin: 0;
+  padding: 0.25rem 1rem 0.4rem;
   font-size: 0.9rem;
   color: var(--fb);
   text-align: center;
@@ -121,4 +138,31 @@ body {
   81.81% { content: "⠰"; }
   90.90% { content: "⠠"; }
   100%  { content: "⠁"; }
+}
+
+/* An app, not a web page: no text selection while clicking around, except
+   where there's something to type or copy (paths, versions, the diagnostics). */
+body {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+input,
+textarea,
+[contenteditable],
+pre,
+code,
+#resultPath,
+.about-facts dd,
+.code-file {
+    -webkit-user-select: text;
+    user-select: text;
+}
+input,
+textarea {
+    cursor: auto;
+}
+.chrome-status code {
+    -webkit-user-select: all;
+    user-select: all;
 }

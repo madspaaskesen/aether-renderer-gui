@@ -21,9 +21,14 @@
 .grid-container {
     display: grid;
     grid-template-columns: auto 5px 1fr;
-    height: 100%;
+    /* One row that fills what the header, footer and status bar leave. */
+    grid-template-rows: minmax(0, 1fr);
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    box-sizing: border-box;
     gap: 2rem;
-    padding: 1.5rem;
+    padding: 0.5rem 1.5rem 0.75rem;
     max-width: 1200px;
     margin: 0 auto;
 }
@@ -39,6 +44,9 @@
 }
 
 .settings-panel {
+    box-sizing: border-box;
+    min-height: 0;
+    overflow-y: auto;
     background-color: var(--settings-panel-bg);
     color: var(--ouput-panel-fg);
     padding: 1rem;
@@ -53,6 +61,9 @@
 }
 
 .output-panel {
+    box-sizing: border-box;
+    min-height: 0;
+    overflow-y: auto;
     background-color: var(--output-panel-bg);
     color: var(--ouput-panel-fg);
     padding: 1rem;
@@ -272,6 +283,27 @@
 
 
 
+/* The status bar is the bottom edge of the whole window */
+.app-status-bar {
+  flex: none;
+  border-radius: 0;
+  box-shadow: inset 0 1px 0 #0f0, inset 0 0 10px rgba(0, 255, 0, 0.35);
+  padding: 0.35rem 1rem;
+}
+.app-status-bar .status-left {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.app-status-bar .status-right {
+  flex: 0 1 50%;
+  min-width: 0;
+  justify-content: flex-end;
+}
+.app-status-bar .status-bar-text-wrap,
+.app-status-bar .status-alert-wrap {
+  max-width: 100%;
+}
+
 /* Render progress in the status bar */
 .status-progress {
   display: inline-block;
@@ -323,8 +355,23 @@
 }
 .bg-hint {
   margin: 0.4rem 0 0 141px;
-  min-height: 1em;
   color: #888;
+  /* Room for two lines, so the MP4 warning doesn't make the panel jump. */
+  line-height: 1.4;
+  min-height: 2.8em;
+}
+/* Hints wrap within the panel's width instead of widening it: width 0 keeps
+   them out of the panel's size, min-width then gives them the full row. */
+.bg-hint {
+  box-sizing: border-box;
+  width: 0;
+  min-width: calc(100% - 141px);
+  overflow-wrap: anywhere;
+}
+/* The capture hint (also .bg-hint) is one line and sits closer to its label. */
+#captureHint {
+  min-width: calc(100% - 110px);
+  min-height: 0;
 }
 .bg-hint.warn {
   color: #d98a00;
@@ -356,4 +403,547 @@
   margin-right: 0.35em;
   position: relative;
   top: -0.08em;
+}
+
+/* HTML input: capture settings */
+.input.input-num {
+  width: 6.5em;
+  flex: 0 0 auto;
+}
+.html-capture .row {
+  align-items: center;
+}
+/* One full-width element after the label, like the other rows, so it lines up. */
+.capture-fields {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* HTML input: live preview over a checkerboard, scaled to fit */
+.html-preview {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.html-preview[hidden] {
+  display: none;
+}
+.html-preview-stage {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #ccc 25%, transparent 25%),
+    linear-gradient(-45deg, #ccc 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #ccc 75%),
+    linear-gradient(-45deg, transparent 75%, #ccc 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+#htmlFrame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: none;
+  background: transparent;
+  transform-origin: center center;
+}
+
+/* Settings drawer: Chrome path */
+.drawer-section {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #444;
+  width: 340px;
+}
+.drawer-section h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+.drawer-section .input {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0.35rem 0;
+}
+.chrome-status {
+  margin-top: 0.4rem;
+  overflow-wrap: anywhere;
+  color: #bbb;
+}
+.chrome-status code {
+  display: block;
+  margin-top: 0.35rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  background: #111;
+  color: #e0e0e0;
+  user-select: all;
+}
+#captureHint {
+  margin-left: 110px;
+}
+.chrome-status.ok {
+  color: #7ddc7d;
+}
+.chrome-status.warn {
+  color: #ffb84d;
+}
+
+/* About window */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal[hidden] {
+  display: none;
+}
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+}
+.modal-card {
+  position: relative;
+  width: min(460px, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 1.5rem 1.75rem 1.25rem;
+  border-radius: 1rem;
+  background: var(--settings-panel-bg);
+  color: var(--ouput-panel-fg);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+.modal-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.7rem;
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: 1.1rem;
+  cursor: pointer;
+  opacity: 0.6;
+}
+.modal-close:hover {
+  opacity: 1;
+}
+.about-logo {
+  width: 64px;
+  height: 64px;
+}
+.modal-card h2 {
+  margin: 0.5rem 0 0;
+}
+.about-version {
+  margin: 0.15rem 0 0.75rem;
+  opacity: 0.7;
+}
+.about-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 0.75rem;
+  margin: 1rem 0;
+  text-align: left;
+}
+.about-facts dt {
+  font-weight: 600;
+}
+.about-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-family: monospace;
+  font-size: 0.8rem;
+}
+.about-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.about-credit {
+  margin: 1rem 0 0;
+  opacity: 0.6;
+}
+
+/* Lucide icons (sprite at the top of index.html) */
+.icon {
+  width: 1.15em;
+  height: 1.15em;
+  flex: none;
+  vertical-align: -0.2em;
+  margin-right: 0.4em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.btn .icon {
+  vertical-align: -0.22em;
+}
+h2 .icon,
+h3 .icon {
+  margin-right: 0.35em;
+  color: var(--logo-color);
+}
+.modal-close .icon {
+  margin: 0;
+}
+
+/* Scrollbars that show up in both themes */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+/* The alert can be clicked to copy it */
+#status-alert {
+  cursor: copy;
+}
+
+/* Left panel: the heading and the Render button stay put while the settings
+   scroll. Negative margins cancel the panel's 1rem padding, so they sit flush
+   with its edges and cover what scrolls underneath. */
+.settings-panel h2,
+.output-panel > h2 {
+  position: sticky;
+  top: -1rem;
+  z-index: 5;
+  margin: -1rem 0 0.5rem;
+  padding: 1rem 0 0.5rem;
+  background: var(--settings-panel-bg);
+}
+.render-bar {
+  position: sticky;
+  bottom: -1rem;
+  z-index: 5;
+  margin: 0.5rem -1rem -1rem;
+  padding: 0.75rem 1rem 1rem;
+  background: var(--settings-panel-bg);
+  border-top: 1px solid var(--border-color);
+}
+
+/* Size presets: fill the row, but don't widen the panel with long names */
+#sizePreset {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+}
+
+/* Basic <-> Advanced switch in the panel heading */
+.settings-panel h2,
+.output-panel > h2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+/* Basic | Advanced tabs, macOS-style segmented control */
+.segmented {
+  flex: none;
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background: var(--input-bg);
+}
+.segmented button {
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.85rem;
+  background: transparent;
+  color: var(--input-fg);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.segmented button:not(.active):hover {
+  background: rgba(78, 78, 247, 0.12);
+}
+.segmented button.active {
+  background: var(--input-border-focus);
+  color: #fff;
+  cursor: default;
+}
+
+/* A steady width, so switching tabs doesn't make the layout jump.
+   The resizer between the panels still changes it. */
+.settings-panel {
+  width: 500px;
+}
+
+/* The Render button sits at the bottom even when nothing scrolls */
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+}
+.render-bar {
+  margin-top: auto;
+}
+
+/* The right panel's background for its sticky heading */
+.output-panel > h2 {
+  background: var(--output-panel-bg);
+}
+.output-panel {
+  justify-content: flex-start;
+}
+
+/* Elements with their own display value still obey [hidden] */
+.result-wrapper[hidden],
+.code-pane[hidden],
+.code-empty[hidden],
+.code-editor-wrap[hidden],
+.code-dirty[hidden] {
+  display: none;
+}
+
+/* Code tab */
+.code-pane {
+  flex: 1;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+.code-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-align: center;
+  border: 1px dashed #888;
+  border-radius: 12px;
+  color: var(--ouput-panel-fg);
+}
+.code-editor-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.code-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.code-file {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: monospace;
+}
+.code-dirty {
+  color: #d98a00;
+  white-space: nowrap;
+}
+.btn.btn-small {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+#codeEditor {
+  flex: 1;
+  min-height: 200px;
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  padding: 0.75rem;
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+  background: var(--input-bg);
+  color: var(--input-fg);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  tab-size: 2;
+  white-space: pre;
+  overflow: auto;
+}
+#codeEditor:focus {
+  outline: none;
+  border-color: var(--input-border-focus);
+}
+.code-hint {
+  opacity: 0.7;
+}
+
+/* Feedback window (reuses the About modal) */
+.feedback-card {
+  width: min(520px, 100%);
+  text-align: left;
+}
+.feedback-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-right: 1.5rem; /* room for the close button */
+}
+.feedback-head h2 {
+  margin: 0;
+}
+.feedback-sub {
+  margin: 0.4rem 0 0.9rem;
+  opacity: 0.75;
+}
+.feedback-field {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+.feedback-field .input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 0.3rem;
+}
+#feedbackMessage {
+  height: 8rem;
+  resize: vertical;
+  font: inherit;
+}
+.feedback-optional {
+  opacity: 0.6;
+}
+.feedback-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.feedback-diag {
+  display: flex;
+  gap: 0.4rem;
+  align-items: flex-start;
+}
+.feedback-details {
+  margin: 0.4rem 0 0 1.4rem;
+  opacity: 0.8;
+}
+.feedback-details summary {
+  cursor: pointer;
+}
+.feedback-details pre {
+  max-height: 10rem;
+  overflow: auto;
+  padding: 0.5rem;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.feedback-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+#feedbackStatus {
+  flex: 1;
+}
+.btn.btn-secondary {
+  background: transparent;
+  color: inherit;
+  border: 1px solid var(--input-border);
+}
+.drawer-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* "Report" next to a render error in the status bar */
+.status-report {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid #f55;
+  border-radius: 4px;
+  background: transparent;
+  color: #f55;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.status-report[hidden] {
+  display: none;
+}
+.status-report .icon {
+  margin-right: 0.3em;
+}
+
+/* Drag and drop: the whole window is the drop target */
+.drop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(20, 20, 60, 0.45);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+}
+.drop-overlay[hidden] {
+  display: none;
+}
+.drop-overlay-box {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 3px dashed #7a7aff;
+  border-radius: 1.25rem;
+  color: #fff;
+  text-align: center;
+}
+.drop-overlay-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-shadow: 0 0 12px #4e4ef7;
 }
