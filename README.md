@@ -54,7 +54,7 @@ Morph Preview:
 
 🪼 Designed with love by GitHub [Mads Paaskesen](https://github.com/madspaaskesen), Linkedin [Mads Paaskesen](https://linkedin.com/in/madspaaskesen)
 
-Install guide here 👉 [INSTALL.md](INSTALL.md)
+Install guide here 👉 [INSTALL.md](INSTALL.md) · What's new 👉 [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
