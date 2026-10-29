@@ -471,8 +471,13 @@ fn mac_menu(app: &AppHandle) -> tauri::Result<tauri::menu::Menu<tauri::Wry>> {
         ],
     )?;
     let report_bug = MenuItem::with_id(app, "report-bug", "Report a Bug…", true, None::<&str>)?;
-    let request_feature =
-        MenuItem::with_id(app, "request-feature", "Request a Feature…", true, None::<&str>)?;
+    let request_feature = MenuItem::with_id(
+        app,
+        "request-feature",
+        "Request a Feature…",
+        true,
+        None::<&str>,
+    )?;
     let help = Submenu::with_items(app, "Help", true, &[&report_bug, &request_feature])?;
     let window = Submenu::with_items(
         app,
@@ -532,19 +537,17 @@ pub fn run() {
             let _ = app; // only used on macOS
             Ok(())
         })
-        .on_menu_event(|app, event| {
-            match event.id().0.as_str() {
-                "about" => {
-                    let _ = app.emit(SHOW_ABOUT_EVENT, ());
-                }
-                "report-bug" => {
-                    let _ = app.emit(OPEN_FEEDBACK_EVENT, "bug");
-                }
-                "request-feature" => {
-                    let _ = app.emit(OPEN_FEEDBACK_EVENT, "feature");
-                }
-                _ => {}
+        .on_menu_event(|app, event| match event.id().0.as_str() {
+            "about" => {
+                let _ = app.emit(SHOW_ABOUT_EVENT, ());
             }
+            "report-bug" => {
+                let _ = app.emit(OPEN_FEEDBACK_EVENT, "bug");
+            }
+            "request-feature" => {
+                let _ = app.emit(OPEN_FEEDBACK_EVENT, "feature");
+            }
+            _ => {}
         })
         .invoke_handler(tauri::generate_handler![
             about_info,
@@ -570,7 +573,12 @@ mod tests {
     fn only_local_html_is_editable() {
         assert!(editable_html("/a/page.html").is_ok());
         assert!(editable_html("C:\\x\\page.HTM").is_ok());
-        for no in ["/a/frames.zip", "/a/notes.txt", "https://example.com/x.html", "/etc/passwd"] {
+        for no in [
+            "/a/frames.zip",
+            "/a/notes.txt",
+            "https://example.com/x.html",
+            "/etc/passwd",
+        ] {
             assert!(editable_html(no).is_err(), "{no}");
         }
     }
@@ -580,7 +588,10 @@ mod tests {
     fn relative_output_goes_next_to_the_input() {
         let home = Path::new("/home/me");
         let next_to = |out: &str, input: &str| resolve_output(out, input, Some(home));
-        assert_eq!(next_to("output.webm", "/a/b/loading.html"), "/a/b/output.webm");
+        assert_eq!(
+            next_to("output.webm", "/a/b/loading.html"),
+            "/a/b/output.webm"
+        );
         assert_eq!(next_to("out.gif", "/a/frames"), "/a/out.gif");
         assert_eq!(next_to("/x/y.mp4", "/a/b.html"), "/x/y.mp4");
         assert_eq!(next_to("~/v.webm", "/a/b.html"), "/home/me/v.webm");
