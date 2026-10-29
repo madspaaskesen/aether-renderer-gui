@@ -39,18 +39,13 @@ This project offers a soft and sacred desktop UI for invoking rendering logic fr
 - **Report a bug / Request a feature** from the app (diagnostics optional, you see what's sent)
 - Light and dark mode, macOS menu, works on macOS, Windows and Linux
 
-### 👀 Preview (Screenshot)
+## 🖼️ Preview
 
-## 🖼️ Aether Renderer GUI — Preview
+![Aether Renderer GUI switching between light and dark mode](docs/screenshots/aether-renderer-gui-preview-v0.3.0-light-dark.gif)
 
-Light Mode:  
-![Aether GUI Light](docs/screenshots/aether-renderer-gui-preview-v0.1.1-light.png)
-
-Dark Mode:  
-![Aether GUI Dark](docs/screenshots/aether-renderer-gui-preview-v0.1.1-dark.png)
-
-Morph Preview:  
-![Aether GUI Light/Dark Fade](docs/screenshots/aether-renderer-gui-preview-v0.1.1-light-dark-fade.gif)
+| Light mode | Dark mode |
+|---|---|
+| ![Aether Renderer GUI, light mode](docs/screenshots/aether-renderer-gui-preview-v0.3.0-light.png) | ![Aether Renderer GUI, dark mode](docs/screenshots/aether-renderer-gui-preview-v0.3.0-dark.png) |
 
 🪼 Designed with love by GitHub [Mads Paaskesen](https://github.com/madspaaskesen), Linkedin [Mads Paaskesen](https://linkedin.com/in/madspaaskesen)
 
