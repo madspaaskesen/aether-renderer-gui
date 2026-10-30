@@ -26,7 +26,7 @@ gh release download $Tag --repo $Repo --pattern "*.msi" --dir $dir --clobber
 if ($LASTEXITCODE) { throw "gh release download failed" }
 
 foreach ($msi in Get-ChildItem $dir -Filter *.msi) {
-  Write-Host "🔏 Signing $($msi.Name)"
+  Write-Host "Signing $($msi.Name)"
   & $SignTool sign /sha1 $Thumbprint /tr http://time.certum.pl /td sha256 /fd sha256 /v $msi.FullName
   if ($LASTEXITCODE) { throw "signtool sign failed" }
   & $SignTool verify /pa /all $msi.FullName
@@ -34,4 +34,4 @@ foreach ($msi in Get-ChildItem $dir -Filter *.msi) {
   gh release upload $Tag $msi.FullName --repo $Repo --clobber
   if ($LASTEXITCODE) { throw "gh release upload failed" }
 }
-Write-Host "✅ Signed and uploaded to $Tag"
+Write-Host "Signed and uploaded to $Tag"
