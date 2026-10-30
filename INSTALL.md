@@ -3,7 +3,8 @@
 ### 🪟 Windows
 
 > ✅ Download the `.msi` installer and **double-click** it.
-> If SmartScreen warns you, click "More info" → "Run anyway".
+> The installer is signed (publisher: Mads Paaskesen, since v0.3.0). If SmartScreen still warns you while
+> the app builds up reputation, click **"More info" → "Run anyway"**.
 
 ---
 
