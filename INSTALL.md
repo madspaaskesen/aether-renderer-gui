@@ -2,26 +2,20 @@
 
 ### 🪟 Windows
 
-> ✅ Simply **double-click** the `aether-renderer-gui.exe` file
-> No installation needed. If SmartScreen warns you, click "More info" → "Run anyway".
+> ✅ Download the `.msi` installer and **double-click** it.
+> If SmartScreen warns you, click "More info" → "Run anyway".
 
 ---
 
 ### 🍏 macOS
 
-1. **Download** the `.app` file (or zip)
-2. Move it to `Applications` or your Desktop
-3. **If blocked by macOS**, do one of the following:
+1. **Download** the `.dmg` for your Mac: `_aarch64.dmg` for Apple Silicon (M1 and newer), `_x64.dmg` for Intel
+2. Open it and drag the app to `Applications`
+3. Start it like any other app. The app is **signed and notarized by Apple** (since v0.3.0), so macOS
+   opens it without warnings.
 
-#### Option 1 — Terminal:
-
-```bash
-xattr -d com.apple.quarantine /path/to/AetherRenderer.app
-```
-
-#### Option 2 — Right Click:
-
-> Right-click the app → **Open** → Click “Open” again on the warning dialog
+> Using a build older than v0.3.0? Right-click the app → **Open** → click "Open" again on the warning
+> dialog, or run `xattr -d com.apple.quarantine /path/to/aether-renderer-gui.app`.
 
 ---
 
